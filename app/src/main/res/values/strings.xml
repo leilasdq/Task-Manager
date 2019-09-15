@@ -1,8 +1,11 @@
 <resources>
-    <string name="app_name">HomeWorrrrrk9</string>
+    <string name="app_name">Task Manager</string>
     <string name="username_edit_text">userName</string>
     <string name="password_edit_text">PassWord</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login_btn_text">Login</string>
+    <string name="not_a_user_txt">Not a user?</string>
+    <string name="create_account_text">Click here to Create an account</string>
 </resources>
