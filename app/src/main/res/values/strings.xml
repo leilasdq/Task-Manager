@@ -8,4 +8,7 @@
     <string name="login_btn_text">Login</string>
     <string name="not_a_user_txt">Not a user?</string>
     <string name="create_account_text">Click here to Create an account</string>
+    <string name="have_account_text">Already have an account?</string>
+    <string name="click_here_to_login">Click here to login</string>
+    <string name="signup">SignUp</string>
 </resources>
