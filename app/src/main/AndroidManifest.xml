@@ -9,9 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ListsActivity"></activity>
-        <activity android:name=".SingleFragmentActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".Controller.ListsActivity"/>
+        <activity android:name=".Controller.SingleFragmentActivity" />
+        <activity android:name=".Controller.LoginActivity"  android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

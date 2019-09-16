@@ -1,4 +1,4 @@
-package com.example.homeworrrrrk9;
+package com.example.homeworrrrrk9.Controller;
 
 
 import android.app.Activity;
@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.example.homeworrrrrk9.R;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 
@@ -75,19 +77,18 @@ public class SignUpFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_sign_up, container, false);
 
         initViews(view);
+        initListeners();
 
+        return view;
+    }
+
+    private void initListeners() {
         mSignButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                userName = mUserInput.getEditText().getText().toString();
-                password = mPasswordInput.getEditText().getText().toString();
-
                 sendResult();
             }
         });
-
-
-        return view;
     }
 
     private void initViews(View view) {
@@ -101,23 +102,49 @@ public class SignUpFragment extends Fragment {
     }
 
     private void sendResult() {
-        userName = mUserInput.getEditText().getText().toString();
-        password = mPasswordInput.getEditText().getText().toString();
-        Log.e(TAG, "sendResult: user: " + userName + "\npass: " + password );
+        if (!userValidate() | !passwordValidate()) {
+            Snackbar.make(getView(), "Fill the realignments..", Snackbar.LENGTH_LONG).show();
+        } else {
+            userName = mUserInput.getEditText().getText().toString();
+            password = mPasswordInput.getEditText().getText().toString();
+            Log.e(TAG, "sendResult: user: " + userName + "\npass: " + password);
 
-        Intent intent = new Intent();
-        intent.putExtra(EXTRA_USER_NAME, userName);
-        intent.putExtra(EXTRA_PASS_WORD, password);
+            Intent intent = new Intent();
+            intent.putExtra(EXTRA_USER_NAME, userName);
+            intent.putExtra(EXTRA_PASS_WORD, password);
 
-        Fragment fragment = getTargetFragment();
+            Fragment fragment = getTargetFragment();
 //        Log.e(TAG, "sendResult: Target Fragment: " + getTargetFragment() );
-        getFragmentManager().beginTransaction().replace(R.id.container, getTargetFragment()).commit();
-        fragment.onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
-
-//        getFragmentManager().beginTransaction()
-//                .replace(R.id.container, fragment)
-//                .commit();
-
+            fragment.onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
+            getFragmentManager().beginTransaction().replace(R.id.container, getTargetFragment()).commit();
+        }
     }
 
+    private boolean userValidate() {
+        String userText = mUserInput.getEditText().getText().toString();
+
+        if (userText.isEmpty()) {
+            mUserInput.setError("Field can not be empty");
+            return false;
+        }
+        if (userText.length() > 15) {
+            mUserInput.setError("Too long text");
+            return false;
+        } else {
+            mUserInput.setError(null);
+            return true;
+        }
+    }
+
+    private boolean passwordValidate() {
+        String passText = mPasswordInput.getEditText().getText().toString();
+
+        if (passText.isEmpty()) {
+            mPasswordInput.setError("Field can not be empty");
+            return false;
+        } else {
+            mPasswordInput.setError(null);
+            return true;
+        }
+    }
 }

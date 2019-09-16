@@ -1,10 +1,12 @@
-package com.example.homeworrrrrk9;
+package com.example.homeworrrrrk9.Controller;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
+
+import com.example.homeworrrrrk9.R;
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
 

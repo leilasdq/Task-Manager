@@ -1,4 +1,4 @@
-package com.example.homeworrrrrk9;
+package com.example.homeworrrrrk9.Controller;
 
 
 import android.app.Activity;
@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.example.homeworrrrrk9.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -115,6 +116,8 @@ public class LoginFragment extends Fragment {
                 } else if (mUserInput.getEditText().getText().toString().equals(getUserName)
                 && mPasswordInput.getEditText().getText().toString().equals(getPassword)){
                     Snackbar.make(getView(), "You are logged in", Snackbar.LENGTH_LONG).show();
+                    Intent intent = ListsActivity.newIntent(getActivity());
+                    startActivity(intent);
                 } else {
                     Snackbar.make(getView(), "invalid username or password", Snackbar.LENGTH_LONG).show();
                 }
@@ -134,10 +137,6 @@ public class LoginFragment extends Fragment {
                 signUpFragment.setTargetFragment(LoginFragment.this, LOGIN_FRAGMENT_REQUEST_CODE);
 
                 //Log.e(TAG, "onClick: TargetFragment: " + signUpFragment.getTargetFragment());
-
-                mUserInput.getEditText().setText("");
-                mPasswordInput.getEditText().setText("");
-
 
                 fragmentManager.beginTransaction()
                         .addToBackStack(null)
