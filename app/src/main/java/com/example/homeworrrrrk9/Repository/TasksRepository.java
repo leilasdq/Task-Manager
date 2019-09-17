@@ -36,7 +36,7 @@ public class TasksRepository {
 
             sTaskManagers.add(task);
         }
-        for (int i = 8; i <= 10 ; i++) {
+        for (int i = 8; i <= 12 ; i++) {
             TaskManager task = new TaskManager();
 
             GregorianCalendar gc = new GregorianCalendar();
@@ -49,6 +49,22 @@ public class TasksRepository {
             task.setDetail("Detail# " + i);
             task.setDate(gc.getTime());
             task.setState(State.DONE);
+
+            sTaskManagers.add(task);
+        }
+        for (int i = 12; i <= 20 ; i++) {
+            TaskManager task = new TaskManager();
+
+            GregorianCalendar gc = new GregorianCalendar();
+            int year = randBetween(2000, 2019);
+            gc.set(gc.YEAR, year);
+            int dayOfYear = randBetween(1, gc.getActualMaximum(gc.DAY_OF_YEAR));
+            gc.set(gc.DAY_OF_YEAR, dayOfYear);
+
+            task.setTitle("Title# " + i);
+            task.setDetail("Detail# " + i);
+            task.setDate(gc.getTime());
+            task.setState(State.DOING);
 
             sTaskManagers.add(task);
         }
