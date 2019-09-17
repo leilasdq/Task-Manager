@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.homeworrrrrk9.Model.TaskManager;
 import com.example.homeworrrrrk9.R;
 import com.example.homeworrrrrk9.TaskManagerFragmentPagerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -22,6 +23,7 @@ import java.util.zip.Inflater;
 
 public class ListsActivity extends AppCompatActivity {
 
+    public static final String TAG_ADD_ITEM_FRAGMENTS = "Add item fragments";
     ViewPager mViewPager;
     TabLayout mTabLayout;
     FloatingActionButton addBtn;
@@ -41,6 +43,8 @@ public class ListsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(ListsActivity.this, "Add clicked", Toast.LENGTH_SHORT).show();
+                ShowItemFragment itemFragment = ShowItemFragment.newInstance();
+                itemFragment.show(getSupportFragmentManager(), TAG_ADD_ITEM_FRAGMENTS);
             }
         });
     }

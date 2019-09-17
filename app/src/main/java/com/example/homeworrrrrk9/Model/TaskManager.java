@@ -2,6 +2,7 @@ package com.example.homeworrrrrk9.Model;
 
 import com.example.homeworrrrrk9.State;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -14,6 +15,7 @@ public class TaskManager {
 
     public TaskManager() {
         mUUID = UUID.randomUUID();
+        mDate = Calendar.getInstance().getTime();
     }
 
     public UUID getUUID() {
