@@ -2,9 +2,12 @@
 <resources>
     <color name="colorPrimary">#1976D2</color>
     <color name="colorPrimaryDark">#1565C0</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#00BCD4</color>
 
     <color name="btn_corner_color">#1A237E</color>
     <color name="btn_base_color">#3D5AFE</color>
     <color name="btn_clicked_color">#2042FD</color>
+
+    <color name="recycle_background">#F8BBD0</color>
+    <color name="text_view_back">#2962FF</color>
 </resources>
