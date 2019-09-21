@@ -16,6 +16,8 @@ import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Spinner;
@@ -30,6 +32,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -37,8 +40,7 @@ import java.util.UUID;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ShowItemFragment extends DialogFragment {
-    public static final String ARG_UUID_ARGUMENT = "uuid argument";
+public class ShowItemFragment extends DialogFragment implements AdapterView.OnItemSelectedListener {
     public static final String TAG_SHOW_DATE_PICKER = "Show date Picker";
     public static final String TAG_SHOW_TIME_PICKER = "Show time picker";
     public static final int GET_DATE_REQUEST_CODE = 2;
@@ -50,14 +52,15 @@ public class ShowItemFragment extends DialogFragment {
     private TextInputLayout description;
     private Button date;
     private Button time;
-    private Spinner done;
+    private Spinner spinner;
+    private List<String> mStatusSpinnerItems;
 
     private TaskManager mTaskManager;
-    private TaskManager taskManager;
     private DateFormat dateFormat;
     private DateFormat timeFormat;
     private String dateStr;
     private String timeStr;
+    private State mState;
 
 
     public ShowItemFragment() {
@@ -73,22 +76,13 @@ public class ShowItemFragment extends DialogFragment {
         return fragment;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (getArguments()!=null){
-            UUID id = (UUID) getArguments().getSerializable(ARG_UUID_ARGUMENT);
-            taskManager = TasksRepository.getTask(id);
-        }
-    }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_show_item, null, false);
 
         initViews(view);
+        spinnerSetup();
 
         mDialogFragment = new AlertDialog.Builder(getActivity())
                 .setPositiveButton("Save", null)
@@ -149,7 +143,7 @@ public class ShowItemFragment extends DialogFragment {
                     else{
                         mTaskManager.setTitle(title.getEditText().getText().toString());
                         mTaskManager.setDetail(description.getEditText().getText().toString());
-                        mTaskManager.setState(State.TODO);
+                        mTaskManager.setState(mState);
                         TasksRepository.addTodoItem(mTaskManager);
 
                         wantToCloseDialog = true;
@@ -164,19 +158,32 @@ public class ShowItemFragment extends DialogFragment {
         }
     }
 
+    private void spinnerSetup() {
+        mStatusSpinnerItems.add(String.valueOf(State.TODO));
+        mStatusSpinnerItems.add(String.valueOf(State.DOING));
+        mStatusSpinnerItems.add(String.valueOf(State.DONE));
+
+        spinner.setOnItemSelectedListener(this);
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_spinner_item, mStatusSpinnerItems);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(dataAdapter);
+    }
+
     private void initViews(View view) {
+        mStatusSpinnerItems = new ArrayList<>();
         title = view.findViewById(R.id.title_editText);
         description = view.findViewById(R.id.des_editText);
-        done = view.findViewById(R.id.done_spinner);
+        spinner = view.findViewById(R.id.done_spinner);
 
         dateFormat = new SimpleDateFormat("EEE, MMM d yyyy");
         timeFormat = new SimpleDateFormat("hh:mm a");
 
         mTaskManager = new TaskManager();
 
-        if (taskManager!=null) {
-            title.getEditText().setText(taskManager.getTitle());
-            description.getEditText().setText(taskManager.getDetail());
+        if (mTaskManager!=null) {
+            title.getEditText().setText(mTaskManager.getTitle());
+            description.getEditText().setText(mTaskManager.getDetail());
         }
     }
 
@@ -233,5 +240,25 @@ public class ShowItemFragment extends DialogFragment {
             }
             mTaskManager.setDate(d);
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        String item = adapterView.getItemAtPosition(i).toString();
+
+        if (item.equals(State.DONE.name())) {
+            mState = State.DONE;
+        }
+        else if (item.equals(State.TODO.name())){
+            mState = State.TODO;
+        }
+        else if (item.equals(State.DOING.name())){
+            mState = State.DOING;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+        mState = State.TODO;
     }
 }

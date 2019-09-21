@@ -87,20 +87,6 @@ public class TodoFragment extends Fragment {
         updateAdapter();
     }
 
-//    @Override
-//    public void setMenuVisibility(boolean menuVisible) {
-//        super.setMenuVisibility(menuVisible);
-//        if (menuVisible){
-//
-//            if (adapter==null){
-//                adapter = new TodoAdapter(todoModels);
-//                mRecyclerView.setAdapter(adapter);
-//            } else {
-//                adapter.notifyDataSetChanged();
-//            }
-//        }
-//    }
-
     private void initUi(View view) {
         mRecyclerView = view.findViewById(R.id.todo_recycler);
         todoFab = view.findViewById(R.id.todo_fab);
@@ -136,14 +122,14 @@ public class TodoFragment extends Fragment {
             dateTxt = itemView.findViewById(R.id.date_txt);
             timeTxt = itemView.findViewById(R.id.time_text);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ShowItemFragment show = ShowItemFragment.newInstance(mTaskManager.getUUID());
-                    show.show(getFragmentManager(), TAG_CHANGE_ITEM);
-                    Toast.makeText(getActivity(), "On Item Clicked", Toast.LENGTH_SHORT).show();
-                }
-            });
+//            itemView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    ShowItemFragment show = ShowItemFragment.newInstance(mTaskManager.getUUID());
+//                    show.show(getFragmentManager(), TAG_CHANGE_ITEM);
+//                    Toast.makeText(getActivity(), "On Item Clicked", Toast.LENGTH_SHORT).show();
+//                }
+//            });
         }
 
         public void bind(TaskManager taskManager){
