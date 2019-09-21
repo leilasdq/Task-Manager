@@ -53,13 +53,11 @@ public class ShowItemFragment extends DialogFragment {
     private Spinner done;
 
     private TaskManager mTaskManager;
-    UUID mUUID;
-    List<TaskManager> mTaskManagers;
-    TaskManager taskManager;
-    DateFormat dateFormat;
-    DateFormat timeFormat;
-    String dateStr;
-    String timeStr;
+    private TaskManager taskManager;
+    private DateFormat dateFormat;
+    private DateFormat timeFormat;
+    private String dateStr;
+    private String timeStr;
 
 
     public ShowItemFragment() {
@@ -74,24 +72,6 @@ public class ShowItemFragment extends DialogFragment {
         fragment.setArguments(args);
         return fragment;
     }
-
-    public static ShowItemFragment newInstance(UUID id) {
-
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_UUID_ARGUMENT, id);
-
-        ShowItemFragment fragment = new ShowItemFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    //    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                             Bundle savedInstanceState) {
-//        // Inflate the layout for this fragment
-//        return inflater.inflate(R.layout.fragment_show_item, container, false);
-//    }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -109,10 +89,6 @@ public class ShowItemFragment extends DialogFragment {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_show_item, null, false);
 
         initViews(view);
-
-        if (getArguments()!=null){
-            mUUID = (UUID) getArguments().getSerializable(ARG_UUID_ARGUMENT);
-        }
 
         mDialogFragment = new AlertDialog.Builder(getActivity())
                 .setPositiveButton("Save", null)
@@ -192,14 +168,11 @@ public class ShowItemFragment extends DialogFragment {
         title = view.findViewById(R.id.title_editText);
         description = view.findViewById(R.id.des_editText);
         done = view.findViewById(R.id.done_spinner);
-        mTaskManagers = TasksRepository.getInstance().getRepositoryList();
 
         dateFormat = new SimpleDateFormat("EEE, MMM d yyyy");
         timeFormat = new SimpleDateFormat("hh:mm a");
 
         mTaskManager = new TaskManager();
-//        dateStr = dateFormat.format(mTaskManager.getDate());
-//        timeStr = timeFormat.format(mTaskManager.getDate());
 
         if (taskManager!=null) {
             title.getEditText().setText(taskManager.getTitle());
