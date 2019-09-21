@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.homeworrrrrk9.Model.TaskManager;
@@ -27,6 +28,7 @@ import com.example.homeworrrrrk9.State;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +42,7 @@ public class ShowItemFragment extends DialogFragment {
     public static final String TAG_SHOW_DATE_PICKER = "Show date Picker";
     public static final String TAG_SHOW_TIME_PICKER = "Show time picker";
     public static final int GET_DATE_REQUEST_CODE = 2;
+    public static final int GET_TIME_REQUEST_CODE = 3;
     String TAG = "Dialog fragment";
     private AlertDialog mDialogFragment;
 
@@ -47,7 +50,7 @@ public class ShowItemFragment extends DialogFragment {
     private TextInputLayout description;
     private Button date;
     private Button time;
-    private CheckBox done;
+    private Spinner done;
 
     private TaskManager mTaskManager;
     UUID mUUID;
@@ -55,6 +58,8 @@ public class ShowItemFragment extends DialogFragment {
     TaskManager taskManager;
     DateFormat dateFormat;
     DateFormat timeFormat;
+    String dateStr;
+    String timeStr;
 
 
     public ShowItemFragment() {
@@ -145,7 +150,7 @@ public class ShowItemFragment extends DialogFragment {
             public void onClick(View view) {
                 Toast.makeText(getActivity(), "Time btn Clicked", Toast.LENGTH_SHORT).show();
                 TimePickerFragment timePickerFragment = TimePickerFragment.newInstance();
-                //timePickerFragment.setTargetFragment(ShowItemFragment.this, GET_DATE_REQUEST_CODE);
+                timePickerFragment.setTargetFragment(ShowItemFragment.this, GET_TIME_REQUEST_CODE);
                 timePickerFragment.show(getFragmentManager(), TAG_SHOW_TIME_PICKER);
             }
         });
@@ -186,13 +191,15 @@ public class ShowItemFragment extends DialogFragment {
     private void initViews(View view) {
         title = view.findViewById(R.id.title_editText);
         description = view.findViewById(R.id.des_editText);
-        done = view.findViewById(R.id.done_check);
+        done = view.findViewById(R.id.done_spinner);
         mTaskManagers = TasksRepository.getInstance().getRepositoryList();
 
         dateFormat = new SimpleDateFormat("EEE, MMM d yyyy");
         timeFormat = new SimpleDateFormat("hh:mm a");
 
         mTaskManager = new TaskManager();
+//        dateStr = dateFormat.format(mTaskManager.getDate());
+//        timeStr = timeFormat.format(mTaskManager.getDate());
 
         if (taskManager!=null) {
             title.getEditText().setText(taskManager.getTitle());
@@ -231,10 +238,27 @@ public class ShowItemFragment extends DialogFragment {
         if (resultCode != Activity.RESULT_OK || data == null)
             return;
 
-        if (requestCode == GET_DATE_REQUEST_CODE) {
-            Date getDate = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_CRIME_DATE);
-            mTaskManager.setDate(getDate);
-            date.setText(dateFormat.format(getDate));
+        else {
+            dateStr = date.getText().toString();
+            timeStr = time.getText().toString();
+            if (requestCode == GET_DATE_REQUEST_CODE) {
+                Date getDate = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_SEND_DATE);
+                dateStr = dateFormat.format(getDate);
+                date.setText(dateStr);
+            }
+            if (requestCode == GET_TIME_REQUEST_CODE) {
+                timeStr = data.getStringExtra(TimePickerFragment.EXTRA_SEND_TIME);
+                time.setText(timeStr);
+            }
+            DateFormat dft = new SimpleDateFormat("EEE, MMM d yyyy hh:mm a");
+            String date = dateStr + " " +  timeStr;
+            Date d = null;
+            try {
+                d = dft.parse(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            mTaskManager.setDate(d);
         }
     }
 }

@@ -15,56 +15,57 @@ import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.DatePicker;
-import android.widget.Toast;
+import android.view.ViewGroup;
+import android.widget.TimePicker;
 
 import com.example.homeworrrrrk9.Model.TaskManager;
 import com.example.homeworrrrrk9.R;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DatePickerFragment extends DialogFragment {
-    public static final String EXTRA_SEND_DATE = "com.example.homeworrrrrk9.Controller.crimeDate";
+public class TimePickerFragment extends DialogFragment {
+    public static final String EXTRA_SEND_TIME = "com.example.homeworrrrrk9.Controller.send time";
     private AlertDialog mAlertDialog;
-    private DatePicker mDatePicker;
+    private TimePicker mTimePicker;
     private Date mDate;
     private TaskManager mTaskManager;
+    String time;
 
 
-    public DatePickerFragment() {
+    public TimePickerFragment() {
         // Required empty public constructor
     }
 
-    public static DatePickerFragment newInstance() {
+    public static TimePickerFragment newInstance() {
 
         Bundle args = new Bundle();
 
-        DatePickerFragment fragment = new DatePickerFragment();
+        TimePickerFragment fragment = new TimePickerFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_date_picker, null, false);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_time_picker, null, false);
 
         mTaskManager = new TaskManager();
         mDate = mTaskManager.getDate();
-        mDatePicker = view.findViewById(R.id.date_picker);
-        initDatePicker();
+        mTimePicker = view.findViewById(R.id.time_picker);
 
         mAlertDialog = new AlertDialog.Builder(getActivity())
+                .setView(view)
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(getActivity(), "Save Clicked", Toast.LENGTH_SHORT).show();
-                        sendResult();
+                        setupTime();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -73,34 +74,27 @@ public class DatePickerFragment extends DialogFragment {
                         mAlertDialog.dismiss();
                     }
                 })
-                .setView(view)
                 .create();
 
         return mAlertDialog;
     }
 
-    private void sendResult() {
-        int year = mDatePicker.getYear();
-        int monthOfYear = mDatePicker.getMonth();
-        int dayOfMonth = mDatePicker.getDayOfMonth();
+    private void setupTime() {
+        Calendar calendar = Calendar.getInstance();
+        int hour = mTimePicker.getCurrentHour();
+        int min = mTimePicker.getCurrentMinute();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, min);
+        SimpleDateFormat mSDF = new SimpleDateFormat("hh:mm a");
+        time = mSDF.format(calendar.getTime());
+        sendResult(time);
+    }
 
-        GregorianCalendar calendar = new GregorianCalendar(year, monthOfYear, dayOfMonth);
-        Date date = calendar.getTime();
-
+    private void sendResult(String getTime){
         Intent intent = new Intent();
-        intent.putExtra(EXTRA_SEND_DATE, date);
+        intent.putExtra(EXTRA_SEND_TIME, getTime);
 
         Fragment fragment = getTargetFragment();
         fragment.onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
-    }
-
-    private void initDatePicker() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(mDate);
-
-        int year = calendar.get(Calendar.YEAR);
-        int monthOfYear = calendar.get(Calendar.MONTH);
-        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-        mDatePicker.init(year, monthOfYear, dayOfMonth, null);
     }
 }
