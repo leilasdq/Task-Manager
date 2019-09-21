@@ -65,6 +65,14 @@ public class DoneFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adapter!=null){
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     private void initUi(View view) {
         mRecyclerView = view.findViewById(R.id.done_recycler);
         models = TasksRepository.getInstance().getRepositoryList();

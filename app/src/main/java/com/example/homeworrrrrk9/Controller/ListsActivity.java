@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.Toast;
 
 import com.example.homeworrrrrk9.Model.TaskManager;
@@ -39,14 +40,14 @@ public class ListsActivity extends AppCompatActivity {
 
         initViews();
 
-        addBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(ListsActivity.this, "Add clicked", Toast.LENGTH_SHORT).show();
-                ShowItemFragment itemFragment = ShowItemFragment.newInstance();
-                itemFragment.show(getSupportFragmentManager(), TAG_ADD_ITEM_FRAGMENTS);
-            }
-        });
+//        addBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+////                Toast.makeText(ListsActivity.this, "Add clicked", Toast.LENGTH_SHORT).show();
+//                ShowItemFragment itemFragment = ShowItemFragment.newInstance();
+//                itemFragment.show(getSupportFragmentManager(), TAG_ADD_ITEM_FRAGMENTS);
+//            }
+//        });
     }
 
     @Override
@@ -71,7 +72,7 @@ public class ListsActivity extends AppCompatActivity {
 
     private void initViews(){
         mViewPager = findViewById(R.id.task_view_pager);
-        addBtn = findViewById(R.id.floatingActionButton);
+        //addBtn = findViewById(R.id.floatingActionButton);
         mTabLayout = findViewById(R.id.task_tab_layout);
 
         TaskManagerFragmentPagerAdapter adapter = new TaskManagerFragmentPagerAdapter(getSupportFragmentManager());

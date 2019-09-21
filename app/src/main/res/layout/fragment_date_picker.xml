@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DatePicker
+    android:id="@+id/date_picker"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/recycle_background"
+    android:calendarViewShown="false"
+    android:headerBackground="@color/btn_corner_color"
+    tools:actionBarNavMode="standard"
+    android:accessibilityHeading="true"
+    tools:context=".Controller.DatePickerFragment">
+
+
+</DatePicker>

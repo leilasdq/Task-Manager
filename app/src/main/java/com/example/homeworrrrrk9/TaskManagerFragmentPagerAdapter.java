@@ -9,8 +9,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
-public class TaskManagerFragmentPagerAdapter extends FragmentPagerAdapter {
+public class TaskManagerFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
 
     public TaskManagerFragmentPagerAdapter(@NonNull FragmentManager fm) {
@@ -48,5 +49,10 @@ public class TaskManagerFragmentPagerAdapter extends FragmentPagerAdapter {
             default:
                 return "";
         }
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
     }
 }

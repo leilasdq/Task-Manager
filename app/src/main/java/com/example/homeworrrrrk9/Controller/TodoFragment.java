@@ -13,11 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.homeworrrrrk9.Model.TaskManager;
 import com.example.homeworrrrrk9.R;
 import com.example.homeworrrrrk9.Repository.TasksRepository;
 import com.example.homeworrrrrk9.State;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -29,12 +31,15 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 public class TodoFragment extends Fragment {
+    public static final String TAG_ADD_ITEM_FRAGMENTS = "Add item fragments";
+    public static final String TAG_CHANGE_ITEM = "Change item";
     String TAG = "TODO FRAGMENT";
 
     private RecyclerView mRecyclerView;
     private List<TaskManager> models;
     private List<TaskManager> todoModels;
     private TodoAdapter adapter;
+    private FloatingActionButton todoFab;
 
     public static TodoFragment newInstance() {
         
@@ -50,6 +55,9 @@ public class TodoFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public TodoAdapter getAdapter() {
+        return adapter;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,16 +66,44 @@ public class TodoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_todo, container, false);
 
         initUi(view);
-
+        updateAdapter();
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new TodoAdapter(todoModels);
-        mRecyclerView.setAdapter(adapter);
+
+        todoFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ShowItemFragment itemFragment = ShowItemFragment.newInstance();
+                itemFragment.show(getFragmentManager(), TAG_ADD_ITEM_FRAGMENTS);
+                updateAdapter();
+            }
+        });
 
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateAdapter();
+    }
+
+//    @Override
+//    public void setMenuVisibility(boolean menuVisible) {
+//        super.setMenuVisibility(menuVisible);
+//        if (menuVisible){
+//
+//            if (adapter==null){
+//                adapter = new TodoAdapter(todoModels);
+//                mRecyclerView.setAdapter(adapter);
+//            } else {
+//                adapter.notifyDataSetChanged();
+//            }
+//        }
+//    }
+
     private void initUi(View view) {
         mRecyclerView = view.findViewById(R.id.todo_recycler);
+        todoFab = view.findViewById(R.id.todo_fab);
         models = TasksRepository.getInstance().getRepositoryList();
         todoModels = new ArrayList<>();
         if (models.size()>0){
@@ -99,6 +135,15 @@ public class TodoFragment extends Fragment {
             descriptionTxt = itemView.findViewById(R.id.description_text);
             dateTxt = itemView.findViewById(R.id.date_txt);
             timeTxt = itemView.findViewById(R.id.time_text);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ShowItemFragment show = ShowItemFragment.newInstance(mTaskManager.getUUID());
+                    show.show(getFragmentManager(), TAG_CHANGE_ITEM);
+                    Toast.makeText(getActivity(), "On Item Clicked", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         public void bind(TaskManager taskManager){
@@ -138,6 +183,15 @@ public class TodoFragment extends Fragment {
         public int getItemCount() {
             Log.e(TAG, "getItemCount: " + mList.size() );
             return mList.size();
+        }
+    }
+
+    private void updateAdapter(){
+        if (adapter==null){
+            adapter = new TodoAdapter(todoModels);
+            mRecyclerView.setAdapter(adapter);
+        } else {
+            adapter.notifyDataSetChanged();
         }
     }
 }
