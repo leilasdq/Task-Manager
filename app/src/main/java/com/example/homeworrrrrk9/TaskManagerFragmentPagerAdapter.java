@@ -1,5 +1,7 @@
 package com.example.homeworrrrrk9;
 
+import android.view.ViewGroup;
+
 import com.example.homeworrrrrk9.Controller.DoingFragment;
 import com.example.homeworrrrrk9.Controller.DoneFragment;
 import com.example.homeworrrrrk9.Controller.TodoFragment;
@@ -49,10 +51,5 @@ public class TaskManagerFragmentPagerAdapter extends FragmentStatePagerAdapter {
             default:
                 return "";
         }
-    }
-
-    @Override
-    public void notifyDataSetChanged() {
-        super.notifyDataSetChanged();
     }
 }

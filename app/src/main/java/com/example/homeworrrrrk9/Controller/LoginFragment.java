@@ -81,8 +81,8 @@ public class LoginFragment extends Fragment {
 
         if (requestCode == LOGIN_FRAGMENT_REQUEST_CODE) {
 
-            Log.e(TAG, "onActivityResult: user: " + mUserInput.getEditText().getText().toString() +
-                    "\npass: " + mPasswordInput.getEditText().getText().toString());
+//            Log.e(TAG, "onActivityResult: user: " + mUserInput.getEditText().getText().toString() +
+//                    "\npass: " + mPasswordInput.getEditText().getText().toString());
 
             getUserName = data.getStringExtra(SignUpFragment.EXTRA_USER_NAME);
             getPassword = data.getStringExtra(SignUpFragment.EXTRA_PASS_WORD);

@@ -1,9 +1,12 @@
 package com.example.homeworrrrrk9.Controller;
 
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,6 +36,7 @@ import java.util.List;
 public class TodoFragment extends Fragment {
     public static final String TAG_ADD_ITEM_FRAGMENTS = "Add item fragments";
     public static final String TAG_CHANGE_ITEM = "Change item";
+    public static final int SHOW_ITEM_FROM_TODO_REQUEST_CODE = 5;
     String TAG = "TODO FRAGMENT";
 
     private RecyclerView mRecyclerView;
@@ -40,6 +44,7 @@ public class TodoFragment extends Fragment {
     private List<TaskManager> todoModels;
     private TodoAdapter adapter;
     private FloatingActionButton todoFab;
+
 
     public static TodoFragment newInstance() {
         
@@ -55,9 +60,6 @@ public class TodoFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public TodoAdapter getAdapter() {
-        return adapter;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,7 +76,8 @@ public class TodoFragment extends Fragment {
             public void onClick(View view) {
                 ShowItemFragment itemFragment = ShowItemFragment.newInstance();
                 itemFragment.show(getFragmentManager(), TAG_ADD_ITEM_FRAGMENTS);
-                updateAdapter();
+                itemFragment.setTargetFragment(TodoFragment.this, SHOW_ITEM_FROM_TODO_REQUEST_CODE);
+//                getFragmentManager().beginTransaction().hide(TodoFragment.this).commit();
             }
         });
 
@@ -122,14 +125,14 @@ public class TodoFragment extends Fragment {
             dateTxt = itemView.findViewById(R.id.date_txt);
             timeTxt = itemView.findViewById(R.id.time_text);
 
-//            itemView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    ShowItemFragment show = ShowItemFragment.newInstance(mTaskManager.getUUID());
-//                    show.show(getFragmentManager(), TAG_CHANGE_ITEM);
-//                    Toast.makeText(getActivity(), "On Item Clicked", Toast.LENGTH_SHORT).show();
-//                }
-//            });
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    EditItemFragment edit = EditItemFragment.newInstance(mTaskManager);
+                    edit.show(getFragmentManager(), TAG_CHANGE_ITEM);
+                    Toast.makeText(getActivity(), "On Item Clicked", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         public void bind(TaskManager taskManager){
@@ -167,7 +170,6 @@ public class TodoFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            Log.e(TAG, "getItemCount: " + mList.size() );
             return mList.size();
         }
     }
@@ -178,6 +180,30 @@ public class TodoFragment extends Fragment {
             mRecyclerView.setAdapter(adapter);
         } else {
             adapter.notifyDataSetChanged();
+        }
+    }
+
+    public void notifyAdapter(){
+        if (adapter!=null){
+            Log.e(TAG, "notifyAdapter: GRRRRR");
+            models = TasksRepository.getInstance().getRepositoryList();
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != Activity.RESULT_OK | data==null){
+            return;
+        }
+        if (requestCode == SHOW_ITEM_FROM_TODO_REQUEST_CODE){
+            boolean isTrue = data.getBooleanExtra(ShowItemFragment.EXTRA_FORCE_NOTIFY, true);
+            Log.e(TAG, "onActivityResult: " + isTrue  );
+            if (isTrue) {
+                notifyAdapter();
+            }
         }
     }
 }

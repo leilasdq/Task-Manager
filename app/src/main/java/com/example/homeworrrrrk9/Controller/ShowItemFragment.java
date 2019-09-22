@@ -45,6 +45,7 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
     public static final String TAG_SHOW_TIME_PICKER = "Show time picker";
     public static final int GET_DATE_REQUEST_CODE = 2;
     public static final int GET_TIME_REQUEST_CODE = 3;
+    public static final String EXTRA_FORCE_NOTIFY = "Force notify";
     String TAG = "Dialog fragment";
     private AlertDialog mDialogFragment;
 
@@ -108,7 +109,7 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
         date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e(TAG, "onClick: Date clicked" );
+                //Log.e(TAG, "onClick: Date clicked" );
                 Toast.makeText(getActivity(), "Date btn Clicked", Toast.LENGTH_SHORT).show();
                 DatePickerFragment datePickerFragment = DatePickerFragment.newInstance();
                 datePickerFragment.setTargetFragment(ShowItemFragment.this, GET_DATE_REQUEST_CODE);
@@ -149,14 +150,31 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
                         wantToCloseDialog = true;
                     }
                     if(wantToCloseDialog){
-//                        getFragmentManager().beginTransaction().remove(ShowItemFragment.this).commit();
-//                        getFragmentManager().beginTransaction().attach(TodoFragment.newInstance()).commit();
+                        Intent intent = new Intent();
+                        intent.putExtra(EXTRA_FORCE_NOTIFY, true);
+                        Fragment fragment = getTargetFragment();
+                        fragment.onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
                         d.dismiss();
                     }
                 }
             });
         }
     }
+
+//    @Override
+//    public void onDismiss(@NonNull DialogInterface dialog) {
+//        super.onDismiss(dialog);
+//
+////        TodoFragment todoFragment = TodoFragment.newInstance();
+////        List fragments = getActivity().getSupportFragmentManager().getFragments();
+////        for (int i = 0; i < fragments.size() ; i++) {
+////            if (fragments.get(i) == todoFragment){
+////                todoFragment.notifyAdapter();
+////            }
+////        }
+//    }
+
+
 
     private void spinnerSetup() {
         mStatusSpinnerItems.add(String.valueOf(State.TODO));
@@ -238,6 +256,7 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+//            Log.e(TAG, "onActivityResult: " + d );
             mTaskManager.setDate(d);
         }
     }

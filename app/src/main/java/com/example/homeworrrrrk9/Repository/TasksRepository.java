@@ -76,6 +76,15 @@ public class TasksRepository {
         sTaskManagers.add(taskManager);
     }
 
+    public static void editItem(TaskManager taskManager){
+        deleteItem(taskManager);
+        sTaskManagers.add(taskManager);
+    }
+
+    public static void deleteItem (TaskManager taskManager){
+        sTaskManagers.remove(taskManager);
+    }
+
     public static int randBetween(int start, int end) {
         return start + (int)Math.round(Math.random() * (end - start));
     }

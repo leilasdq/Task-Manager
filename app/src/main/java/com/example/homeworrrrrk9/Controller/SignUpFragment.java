@@ -107,7 +107,7 @@ public class SignUpFragment extends Fragment {
         } else {
             userName = mUserInput.getEditText().getText().toString();
             password = mPasswordInput.getEditText().getText().toString();
-            Log.e(TAG, "sendResult: user: " + userName + "\npass: " + password);
+//            Log.e(TAG, "sendResult: user: " + userName + "\npass: " + password);
 
             Intent intent = new Intent();
             intent.putExtra(EXTRA_USER_NAME, userName);
