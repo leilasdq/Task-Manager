@@ -16,7 +16,7 @@
         android:background="@color/recycle_background"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/todo_fab"
+        android:id="@+id/doing_fab"
         style="@style/Widget.Design.FloatingActionButton"
         android:layout_width="72dp"
         android:layout_height="66dp"

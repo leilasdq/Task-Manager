@@ -187,7 +187,13 @@ public class TodoFragment extends Fragment {
         if (adapter!=null){
             Log.e(TAG, "notifyAdapter: GRRRRR");
             models = TasksRepository.getInstance().getRepositoryList();
+            if (models.size()>0){
+                for (int i = 0; i < models.size() ; i++) {
+                    if (models.get(i).getState()== State.TODO) todoModels.add(models.get(i));
+                }
+            }
             adapter.notifyDataSetChanged();
+            adapter.notifyItemInserted(todoModels.size());
         }
     }
 
