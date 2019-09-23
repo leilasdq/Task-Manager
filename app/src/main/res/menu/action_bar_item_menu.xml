@@ -3,6 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/delete_all"
+        android:title="delete all items"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_delete_all"/>
+
+    <item
         android:id="@+id/account"
         android:title="Account"
         android:icon="@drawable/ic_action_white_account"

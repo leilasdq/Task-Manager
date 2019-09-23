@@ -85,6 +85,10 @@ public class TasksRepository {
         sTaskManagers.remove(taskManager);
     }
 
+    public static void deleteAll(){
+        sTaskManagers.clear();
+    }
+
     public static int randBetween(int start, int end) {
         return start + (int)Math.round(Math.random() * (end - start));
     }

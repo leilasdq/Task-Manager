@@ -7,6 +7,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,10 +19,12 @@ import android.widget.Toast;
 
 import com.example.homeworrrrrk9.Model.TaskManager;
 import com.example.homeworrrrrk9.R;
+import com.example.homeworrrrrk9.Repository.TasksRepository;
 import com.example.homeworrrrrk9.TaskManagerFragmentPagerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.List;
 import java.util.zip.Inflater;
 
 public class ListsActivity extends AppCompatActivity {
@@ -85,6 +88,24 @@ public class ListsActivity extends AppCompatActivity {
                 return true;
             case R.id.log_out:
                 System.exit(1);
+                return true;
+            case R.id.delete_all:
+                final List<TaskManager> models = TasksRepository.getInstance().getRepositoryList();
+                AlertDialog delete = new AlertDialog.Builder(this)
+                        .setTitle("Delete all items")
+                        .setMessage("All items will be delete.\nAre you sure?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (models.size()>0){
+                                    TasksRepository.deleteAll();
+                                } else {
+                                    Toast.makeText(ListsActivity.this, "You didn't have any items", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        })
+                        .setNegativeButton("No", null).create();
+                delete.show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
