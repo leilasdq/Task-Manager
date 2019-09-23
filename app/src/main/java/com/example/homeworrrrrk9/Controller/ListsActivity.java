@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -64,6 +65,9 @@ public class ListsActivity extends AppCompatActivity {
                 return true;
             case R.id.account:
                 Toast.makeText(this, "Account clicked", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.log_out:
+                System.exit(1);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
