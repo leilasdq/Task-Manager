@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -26,12 +27,19 @@ import java.util.zip.Inflater;
 public class ListsActivity extends AppCompatActivity {
 
     public static final String TAG_ADD_ITEM_FRAGMENTS = "Add item fragments";
+    public static final String EXTRA_USER_NAME = "com.example.homeworrrrrk9.Controller.UserName";
+    public static final String EXTRA_PASS_WORD = "com.example.homeworrrrrk9.Controller.PassWord";
     ViewPager mViewPager;
     TabLayout mTabLayout;
+    String user;
+    String pass;
     FloatingActionButton addBtn;
 
-    public static Intent newIntent(Context context){
-        return new Intent(context, ListsActivity.class);
+    public static Intent newIntent(Context context, String userName, String passWord){
+        Intent intent = new Intent(context, ListsActivity.class);
+        intent.putExtra(EXTRA_USER_NAME, userName);
+        intent.putExtra(EXTRA_PASS_WORD, passWord);
+        return intent;
     }
 
     @Override
@@ -40,6 +48,8 @@ public class ListsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lists);
 
         initViews();
+        user = getIntent().getStringExtra(EXTRA_USER_NAME);
+        pass = getIntent().getStringExtra(EXTRA_PASS_WORD);
 
 //        addBtn.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -64,7 +74,14 @@ public class ListsActivity extends AppCompatActivity {
                 Toast.makeText(this, "Search clicked", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.account:
-                Toast.makeText(this, "Account clicked", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Account clicked", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.show_account:
+                AlertDialog alertDialog = new AlertDialog.Builder(this)
+                        .setTitle("Account detail")
+                        .setMessage("username: " + user + "\npassword: " + pass)
+                        .setNegativeButton("OK", null).create();
+                alertDialog.show();
                 return true;
             case R.id.log_out:
                 System.exit(1);

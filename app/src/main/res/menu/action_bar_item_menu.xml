@@ -5,10 +5,13 @@
     <item
         android:id="@+id/account"
         android:title="Account"
-        android:icon="@drawable/ic_action_white_acount"
+        android:icon="@drawable/ic_action_white_account"
         app:showAsAction="ifRoom">
 
         <menu>
+            <item
+                android:id="@+id/show_account"
+                android:title="show details"/>
             <item
                 android:id="@+id/log_out"
                 android:title="Log out"/>

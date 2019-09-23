@@ -108,7 +108,7 @@ public class LoginFragment extends Fragment {
                 } else if (mUserInput.getEditText().getText().toString().equals(getUserName)
                 && mPasswordInput.getEditText().getText().toString().equals(getPassword)){
                     Snackbar.make(getView(), "You are logged in", Snackbar.LENGTH_LONG).show();
-                    Intent intent = ListsActivity.newIntent(getActivity());
+                    Intent intent = ListsActivity.newIntent(getActivity(), getUserName, getPassword);
                     startActivity(intent);
                 } else {
                     Snackbar.make(getView(), "invalid username or password", Snackbar.LENGTH_LONG).show();
