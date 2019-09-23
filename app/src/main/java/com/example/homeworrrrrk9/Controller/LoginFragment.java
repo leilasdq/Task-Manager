@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -25,6 +26,8 @@ import com.google.android.material.textfield.TextInputLayout;
  */
 public class LoginFragment extends Fragment {
     public static final int LOGIN_FRAGMENT_REQUEST_CODE = 1;
+    public static final String BUNDLE_NAME_STRING = "name string";
+    public static final String BUNDLE_PASSWORD_STRING = "Password string";
     private final String FRAGMENT_TAG_SIGN_UP_FRAGMENT = "sign up fragment";
 
     public static final String TAG = "Login fragment";
@@ -42,6 +45,9 @@ public class LoginFragment extends Fragment {
     String getUserName;
     String getPassword;
 
+    String saveName;
+    String savePass;
+
     public LoginFragment() {
         // Required empty public constructor
     }
@@ -58,6 +64,11 @@ public class LoginFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState!=null){
+            saveName = savedInstanceState.getString(BUNDLE_NAME_STRING);
+            savePass = savedInstanceState.getString(BUNDLE_PASSWORD_STRING);
+        }
     }
 
     @Override
@@ -68,6 +79,7 @@ public class LoginFragment extends Fragment {
 
         initViews(view);
         setUpListeners();
+
 
         return view;
     }
@@ -81,18 +93,10 @@ public class LoginFragment extends Fragment {
 
         if (requestCode == LOGIN_FRAGMENT_REQUEST_CODE) {
 
-//            Log.e(TAG, "onActivityResult: user: " + mUserInput.getEditText().getText().toString() +
-//                    "\npass: " + mPasswordInput.getEditText().getText().toString());
-
             getUserName = data.getStringExtra(SignUpFragment.EXTRA_USER_NAME);
             getPassword = data.getStringExtra(SignUpFragment.EXTRA_PASS_WORD);
-
-//            //Log.e(TAG, "sendResult: user: " + getUserName + "\npass: " + getPassword );
-//
-//
-//
-//            Log.e(TAG, "onActivityResult: user: " + mUserInput.getEditText().getText().toString() +
-//                    "\npass: " + mPasswordInput.getEditText().getText().toString());
+            mUserInput.getEditText().setText(getUserName);
+            mPasswordInput.getEditText().setText(getPassword);
         }
     }
 
@@ -102,8 +106,8 @@ public class LoginFragment extends Fragment {
         mLoginButton = view.findViewById(R.id.login_btn);
         mSignUpButton = view.findViewById(R.id.create_account_btn);
 
-        mUserInput.getEditText().setText(getUserName);
-        mPasswordInput.getEditText().setText(getPassword);
+        mUserInput.getEditText().setText(saveName);
+        mPasswordInput.getEditText().setText(savePass);
     }
 
     private void setUpListeners() {
@@ -129,15 +133,9 @@ public class LoginFragment extends Fragment {
             public void onClick(View view) {
                 String username = mUserInput.getEditText().getText().toString();
                 String password = mPasswordInput.getEditText().getText().toString();
-
-                //Log.e(TAG, "newInstance: user: " + username +"\npass: " + password );
-
                 FragmentManager fragmentManager = getFragmentManager();
                 SignUpFragment signUpFragment = SignUpFragment.newInstance(username, password);
                 signUpFragment.setTargetFragment(LoginFragment.this, LOGIN_FRAGMENT_REQUEST_CODE);
-
-                //Log.e(TAG, "onClick: TargetFragment: " + signUpFragment.getTargetFragment());
-
                 fragmentManager.beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.container, signUpFragment, FRAGMENT_TAG_SIGN_UP_FRAGMENT)
@@ -172,5 +170,12 @@ public class LoginFragment extends Fragment {
             mPasswordInput.setError(null);
             return true;
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(BUNDLE_NAME_STRING, mUserInput.getEditText().getText().toString());
+        outState.putString(BUNDLE_PASSWORD_STRING, mPasswordInput.getEditText().getText().toString());
     }
 }

@@ -46,6 +46,12 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
     public static final int GET_DATE_REQUEST_CODE = 2;
     public static final int GET_TIME_REQUEST_CODE = 3;
     public static final String EXTRA_FORCE_NOTIFY = "Force notify";
+    public static final String BUNDLE_TITLE_TEXT = "Title text";
+    public static final String BUNDLE_DETAIL_TEXT = "Detail text";
+    public static final String BUNDLE_DATE_BTN_TEXT = "Date btn text";
+    public static final String BUNDLE_TIME_BTN_TEXT = "Time btn text";
+    public static final String BUNDLE_SPINNER_POSITION = "Spinner position";
+
     String TAG = "Dialog fragment";
     private AlertDialog mDialogFragment;
 
@@ -85,6 +91,21 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
         initViews(view);
         spinnerSetup();
 
+        if (savedInstanceState!=null){
+            title.getEditText().setText(savedInstanceState.getString(BUNDLE_TITLE_TEXT));
+            description.getEditText().setText(savedInstanceState.getString(BUNDLE_DETAIL_TEXT));
+            date.setText(savedInstanceState.getString(BUNDLE_DATE_BTN_TEXT));
+            time.setText(savedInstanceState.getString(BUNDLE_TIME_BTN_TEXT));
+            spinner.setSelection(savedInstanceState.getInt(BUNDLE_SPINNER_POSITION, 0));
+        } else {
+            if (mTaskManager!=null) {
+                title.getEditText().setText(mTaskManager.getTitle());
+                description.getEditText().setText(mTaskManager.getDetail());
+                date.setText(dateFormat.format(mTaskManager.getDate()));
+                time.setText(timeFormat.format(mTaskManager.getDate()));
+            }
+        }
+
         mDialogFragment = new AlertDialog.Builder(getActivity())
                 .setPositiveButton("Save", null)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -95,22 +116,17 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
                 }).setView(view)
                 .create();
 
-        date = view.findViewById(R.id.date_btn);
-        time = view.findViewById(R.id.time_btn);
         setUpListeners();
 
         return mDialogFragment;
     }
 
     private void setUpListeners() {
-        date.setText(dateFormat.format(mTaskManager.getDate()));
-        time.setText(timeFormat.format(mTaskManager.getDate()));
-
         date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Log.e(TAG, "onClick: Date clicked" );
-                Toast.makeText(getActivity(), "Date btn Clicked", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "Date btn Clicked", Toast.LENGTH_SHORT).show();
                 DatePickerFragment datePickerFragment = DatePickerFragment.newInstance();
                 datePickerFragment.setTargetFragment(ShowItemFragment.this, GET_DATE_REQUEST_CODE);
                 datePickerFragment.show(getFragmentManager(), TAG_SHOW_DATE_PICKER);
@@ -119,7 +135,7 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
         time.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Time btn Clicked", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "Time btn Clicked", Toast.LENGTH_SHORT).show();
                 TimePickerFragment timePickerFragment = TimePickerFragment.newInstance();
                 timePickerFragment.setTargetFragment(ShowItemFragment.this, GET_TIME_REQUEST_CODE);
                 timePickerFragment.show(getFragmentManager(), TAG_SHOW_TIME_PICKER);
@@ -189,20 +205,16 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
     }
 
     private void initViews(View view) {
+        mTaskManager = new TaskManager();
         mStatusSpinnerItems = new ArrayList<>();
         title = view.findViewById(R.id.title_editText);
         description = view.findViewById(R.id.des_editText);
         spinner = view.findViewById(R.id.done_spinner);
+        date = view.findViewById(R.id.date_btn);
+        time = view.findViewById(R.id.time_btn);
 
         dateFormat = new SimpleDateFormat("EEE, MMM d yyyy");
         timeFormat = new SimpleDateFormat("hh:mm a");
-
-        mTaskManager = new TaskManager();
-
-        if (mTaskManager!=null) {
-            title.getEditText().setText(mTaskManager.getTitle());
-            description.getEditText().setText(mTaskManager.getDetail());
-        }
     }
 
     private boolean titleValidate() {
@@ -279,5 +291,15 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
         mState = State.TODO;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(BUNDLE_TITLE_TEXT, title.getEditText().getText().toString());
+        outState.putString(BUNDLE_DETAIL_TEXT, description.getEditText().getText().toString());
+        outState.putString(BUNDLE_DATE_BTN_TEXT, date.getText().toString());
+        outState.putString(BUNDLE_TIME_BTN_TEXT, time.getText().toString());
+        outState.putInt(BUNDLE_SPINNER_POSITION, spinner.getSelectedItemPosition());
     }
 }

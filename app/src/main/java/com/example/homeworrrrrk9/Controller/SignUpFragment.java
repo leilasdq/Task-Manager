@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
@@ -23,6 +24,10 @@ import com.google.android.material.textfield.TextInputLayout;
  * A simple {@link Fragment} subclass.
  */
 public class SignUpFragment extends Fragment {
+
+    public static final String BUNDLE_NAME_STRING = "name string";
+    public static final String BUNDLE_PASSWORD_STRING = "Password string";
+
     public static final String ARGS_USERNAME_TEXT = "username text";
     public static final String ARGS_PASSWORD_TEXT = "password text";
 
@@ -40,6 +45,9 @@ public class SignUpFragment extends Fragment {
     String userName;
     String password;
 
+    String saveName;
+    String savePass;
+
 
     public SignUpFragment() {
         // Required empty public constructor
@@ -51,8 +59,6 @@ public class SignUpFragment extends Fragment {
         args.putString(ARGS_USERNAME_TEXT, user);
         args.putString(ARGS_PASSWORD_TEXT, pass);
 
-//        Log.e(TAG, "newInstance: user: " + user + "\npass: " + pass);
-
         SignUpFragment fragment = new SignUpFragment();
         fragment.setArguments(args);
         return fragment;
@@ -62,12 +68,19 @@ public class SignUpFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        saveName = new String();
+        savePass = new String();
+
         if (getArguments() != null) {
             getUserText = getArguments().getString(ARGS_USERNAME_TEXT);
             getPassText = getArguments().getString(ARGS_PASSWORD_TEXT);
         }
 
-//        Log.e(TAG, "newInstance: user: " + getUserText + "\npass: " + getPassText);
+        if (savedInstanceState!=null){
+            saveName = savedInstanceState.getString(BUNDLE_NAME_STRING);
+            savePass = savedInstanceState.getString(BUNDLE_PASSWORD_STRING);
+        }
+
     }
 
     @Override
@@ -92,12 +105,21 @@ public class SignUpFragment extends Fragment {
     }
 
     private void initViews(View view) {
+
         mUserInput = view.findViewById(R.id.text_user_name);
         mPasswordInput = view.findViewById(R.id.text_password);
         mSignButton = view.findViewById(R.id.signUp_btn);
 
-        mUserInput.getEditText().setText(getUserText);
-        mPasswordInput.getEditText().setText(getPassText);
+        if (saveName.isEmpty()){
+            mUserInput.getEditText().setText(getUserText);
+        } else {
+            mUserInput.getEditText().setText(saveName);
+        }
+        if (savePass.isEmpty()) {
+            mPasswordInput.getEditText().setText(getPassText);
+        } else {
+            mPasswordInput.getEditText().setText(savePass);
+        }
 
     }
 
@@ -107,14 +129,12 @@ public class SignUpFragment extends Fragment {
         } else {
             userName = mUserInput.getEditText().getText().toString();
             password = mPasswordInput.getEditText().getText().toString();
-//            Log.e(TAG, "sendResult: user: " + userName + "\npass: " + password);
 
             Intent intent = new Intent();
             intent.putExtra(EXTRA_USER_NAME, userName);
             intent.putExtra(EXTRA_PASS_WORD, password);
 
             Fragment fragment = getTargetFragment();
-//        Log.e(TAG, "sendResult: Target Fragment: " + getTargetFragment() );
             fragment.onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
             getFragmentManager().beginTransaction().replace(R.id.container, getTargetFragment()).commit();
         }
@@ -146,5 +166,12 @@ public class SignUpFragment extends Fragment {
             mPasswordInput.setError(null);
             return true;
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(BUNDLE_NAME_STRING, mUserInput.getEditText().getText().toString());
+        outState.putString(BUNDLE_PASSWORD_STRING, mPasswordInput.getEditText().getText().toString());
     }
 }

@@ -44,6 +44,11 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
     public static final int GET_DATE_REQUEST_CODE = 10;
     public static final int GET_TIME_REQUEST_CODE = 11;
     public static final String ARGS_TASK_MANAGER_MODEL = "Task manager model";
+    public static final String BUNDLE_TITLE_TEXT = "Title text";
+    public static final String BUNDLE_DETAIL_TEXT = "Detail text";
+    public static final String BUNDLE_DATE_BTN_TEXT = "Date btn text";
+    public static final String BUNDLE_TIME_BTN_TEXT = "Time btn text";
+    public static final String BUNDLE_SPINNER_POSITION = "Spinner position";
     String TAG = "Edit";
 
     private AlertDialog mDialogFragment;
@@ -78,11 +83,6 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
         return fragment;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -90,8 +90,6 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
         
         initViews(view);
         spinnerSetup();
-        date = view.findViewById(R.id.date_btn);
-        time = view.findViewById(R.id.time_btn);
 
         if (getArguments()!=null){
             taskManager = (TaskManager) getArguments().getSerializable(ARGS_TASK_MANAGER_MODEL);
@@ -99,6 +97,14 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
             description.getEditText().setText(taskManager.getDetail());
             stDateAndTimeBtn(taskManager);
             spinner.setPrompt(taskManager.getState().toString());
+        }
+
+        if (savedInstanceState!=null){
+            title.getEditText().setText(savedInstanceState.getString(BUNDLE_TITLE_TEXT));
+            description.getEditText().setText(savedInstanceState.getString(BUNDLE_DETAIL_TEXT));
+            date.setText(savedInstanceState.getString(BUNDLE_DATE_BTN_TEXT));
+            time.setText(savedInstanceState.getString(BUNDLE_TIME_BTN_TEXT));
+            spinner.setSelection(savedInstanceState.getInt(BUNDLE_SPINNER_POSITION, 0));
         }
 
         mDialogFragment = new AlertDialog.Builder(getActivity())
@@ -217,6 +223,8 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
         title = view.findViewById(R.id.title_editText);
         description = view.findViewById(R.id.des_editText);
         spinner = view.findViewById(R.id.done_spinner);
+        date = view.findViewById(R.id.date_btn);
+        time = view.findViewById(R.id.time_btn);
         dateFormat = new SimpleDateFormat("EEE, MMM d yyyy");
         timeFormat = new SimpleDateFormat("hh:mm a");
 
@@ -304,5 +312,15 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
             description.setError(null);
             return true;
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(BUNDLE_TITLE_TEXT, title.getEditText().getText().toString());
+        outState.putString(BUNDLE_DETAIL_TEXT, description.getEditText().getText().toString());
+        outState.putString(BUNDLE_DATE_BTN_TEXT, date.getText().toString());
+        outState.putString(BUNDLE_TIME_BTN_TEXT, time.getText().toString());
+        outState.putInt(BUNDLE_SPINNER_POSITION, spinner.getSelectedItemPosition());
     }
 }
