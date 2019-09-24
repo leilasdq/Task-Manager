@@ -148,8 +148,7 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
                         wantToCloseDialog = true;
                     }
                     if(wantToCloseDialog){
-//                        getFragmentManager().beginTransaction().remove(ShowItemFragment.this).commit();
-//                        getFragmentManager().beginTransaction().attach(TodoFragment.newInstance()).commit();
+                        setDate();
                         d.dismiss();
                     }
                 }
@@ -184,17 +183,26 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
                 timeStr = data.getStringExtra(TimePickerFragment.EXTRA_SEND_TIME);
                 time.setText(timeStr);
             }
-            DateFormat dft = new SimpleDateFormat("EEE, MMM d yyyy hh:mm a");
-            String date = dateStr + " " +  timeStr;
-            Date d = null;
-            try {
-                d = dft.parse(date);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-//            Log.e(TAG, "onActivityResult: " + d );
-            mTaskManager.setDate(d);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().recreate();
+    }
+
+    private void setDate() {
+        DateFormat dft = new SimpleDateFormat("EEE, MMM d yyyy hh:mm a");
+        String date = dateStr + " " +  timeStr;
+        Date d = null;
+        try {
+            d = dft.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+//            Log.e(TAG, "onActivityResult: " + d );
+        mTaskManager.setDate(d);
     }
 
     private void stDateAndTimeBtn(TaskManager taskManager) {
@@ -242,7 +250,7 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
             @Override
             public void onClick(View view) {
                 Toast.makeText(getActivity(), "Date btn Clicked", Toast.LENGTH_SHORT).show();
-                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance();
+                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(taskManager.getDate());
                 datePickerFragment.setTargetFragment(EditItemFragment.this, GET_DATE_REQUEST_CODE);
                 datePickerFragment.show(getFragmentManager(), TAG_SHOW_DATE_PICKER);
             }
@@ -289,7 +297,6 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
     public void onNothingSelected(AdapterView<?> adapterView) {
         
     }
-
     private boolean titleValidate() {
         String titleText = title.getEditText().getText().toString();
 

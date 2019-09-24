@@ -45,8 +45,8 @@ public class SignUpFragment extends Fragment {
     String userName;
     String password;
 
-    String saveName;
-    String savePass;
+    String saveName = "";
+    String savePass = "";
 
 
     public SignUpFragment() {
@@ -68,18 +68,15 @@ public class SignUpFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        saveName = new String();
-        savePass = new String();
-
         if (getArguments() != null) {
             getUserText = getArguments().getString(ARGS_USERNAME_TEXT);
             getPassText = getArguments().getString(ARGS_PASSWORD_TEXT);
         }
-
-        if (savedInstanceState!=null){
-            saveName = savedInstanceState.getString(BUNDLE_NAME_STRING);
-            savePass = savedInstanceState.getString(BUNDLE_PASSWORD_STRING);
-        }
+//
+//        if (savedInstanceState!=null){
+//            saveName = savedInstanceState.getString(BUNDLE_NAME_STRING);
+//            savePass = savedInstanceState.getString(BUNDLE_PASSWORD_STRING);
+//        }
 
     }
 
@@ -95,6 +92,13 @@ public class SignUpFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveName = mUserInput.getEditText().getText().toString();
+        savePass = mPasswordInput.getEditText().getText().toString();
+    }
+
     private void initListeners() {
         mSignButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,7 +109,6 @@ public class SignUpFragment extends Fragment {
     }
 
     private void initViews(View view) {
-
         mUserInput = view.findViewById(R.id.text_user_name);
         mPasswordInput = view.findViewById(R.id.text_password);
         mSignButton = view.findViewById(R.id.signUp_btn);
@@ -171,7 +174,7 @@ public class SignUpFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(BUNDLE_NAME_STRING, mUserInput.getEditText().getText().toString());
-        outState.putString(BUNDLE_PASSWORD_STRING, mPasswordInput.getEditText().getText().toString());
+        outState.putString(BUNDLE_NAME_STRING, saveName);
+        outState.putString(BUNDLE_PASSWORD_STRING, savePass);
     }
 }

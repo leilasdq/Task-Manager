@@ -102,6 +102,7 @@ public class ListsActivity extends AppCompatActivity {
                                 } else {
                                     Toast.makeText(ListsActivity.this, "You didn't have any items", Toast.LENGTH_SHORT).show();
                                 }
+                                ListsActivity.this.recreate();
                             }
                         })
                         .setNegativeButton("No", null).create();

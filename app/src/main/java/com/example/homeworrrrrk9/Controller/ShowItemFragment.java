@@ -97,13 +97,6 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
             date.setText(savedInstanceState.getString(BUNDLE_DATE_BTN_TEXT));
             time.setText(savedInstanceState.getString(BUNDLE_TIME_BTN_TEXT));
             spinner.setSelection(savedInstanceState.getInt(BUNDLE_SPINNER_POSITION, 0));
-        } else {
-            if (mTaskManager!=null) {
-                title.getEditText().setText(mTaskManager.getTitle());
-                description.getEditText().setText(mTaskManager.getDetail());
-                date.setText(dateFormat.format(mTaskManager.getDate()));
-                time.setText(timeFormat.format(mTaskManager.getDate()));
-            }
         }
 
         mDialogFragment = new AlertDialog.Builder(getActivity())
@@ -127,7 +120,7 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
             public void onClick(View view) {
                 //Log.e(TAG, "onClick: Date clicked" );
                 //Toast.makeText(getActivity(), "Date btn Clicked", Toast.LENGTH_SHORT).show();
-                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance();
+                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(mTaskManager.getDate());
                 datePickerFragment.setTargetFragment(ShowItemFragment.this, GET_DATE_REQUEST_CODE);
                 datePickerFragment.show(getFragmentManager(), TAG_SHOW_DATE_PICKER);
             }
@@ -166,6 +159,7 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
                         wantToCloseDialog = true;
                     }
                     if(wantToCloseDialog){
+                        setDate();
                         Intent intent = new Intent();
                         intent.putExtra(EXTRA_FORCE_NOTIFY, true);
                         Fragment fragment = getTargetFragment();
@@ -215,6 +209,13 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
 
         dateFormat = new SimpleDateFormat("EEE, MMM d yyyy");
         timeFormat = new SimpleDateFormat("hh:mm a");
+
+        if (mTaskManager!=null) {
+            title.getEditText().setText(mTaskManager.getTitle());
+            description.getEditText().setText(mTaskManager.getDetail());
+            date.setText(dateFormat.format(mTaskManager.getDate()));
+            time.setText(timeFormat.format(mTaskManager.getDate()));
+        }
     }
 
     private boolean titleValidate() {
@@ -249,8 +250,7 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
             return;
 
         else {
-            dateStr = date.getText().toString();
-            timeStr = time.getText().toString();
+
             if (requestCode == GET_DATE_REQUEST_CODE) {
                 Date getDate = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_SEND_DATE);
                 dateStr = dateFormat.format(getDate);
@@ -260,17 +260,31 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
                 timeStr = data.getStringExtra(TimePickerFragment.EXTRA_SEND_TIME);
                 time.setText(timeStr);
             }
-            DateFormat dft = new SimpleDateFormat("EEE, MMM d yyyy hh:mm a");
-            String date = dateStr + " " +  timeStr;
-            Date d = null;
-            try {
-                d = dft.parse(date);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-//            Log.e(TAG, "onActivityResult: " + d );
-            mTaskManager.setDate(d);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().recreate();
+//        Intent intent = new Intent(getContext(), ListsActivity.class);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        startActivity(intent);
+    }
+
+    private void setDate() {
+        dateStr = date.getText().toString();
+        timeStr = time.getText().toString();
+        DateFormat dft = new SimpleDateFormat("EEE, MMM d yyyy hh:mm a");
+        String date = dateStr + " " +  timeStr;
+        Date d = null;
+        try {
+            d = dft.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+//            Log.e(TAG, "onActivityResult: " + d );
+        mTaskManager.setDate(d);
     }
 
     @Override
@@ -301,5 +315,6 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
         outState.putString(BUNDLE_DATE_BTN_TEXT, date.getText().toString());
         outState.putString(BUNDLE_TIME_BTN_TEXT, time.getText().toString());
         outState.putInt(BUNDLE_SPINNER_POSITION, spinner.getSelectedItemPosition());
+        outState.putSerializable("save date", dateStr);
     }
 }

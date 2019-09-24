@@ -27,6 +27,9 @@ import com.google.android.material.textfield.TextInputLayout;
 public class LoginFragment extends Fragment {
     public static final int LOGIN_FRAGMENT_REQUEST_CODE = 1;
     public static final String BUNDLE_NAME_STRING = "name string";
+    public static final String BUNDLE_PASS_STRING = "Pass string";
+    public static final String BUNDLE_USER_COME_FROM_SIGN_UP = "user come from sign up";
+    public static final String BUNDLE_PASS_COME_FROM_SIGN_UP = "pass come from sign up";
     private final String FRAGMENT_TAG_SIGN_UP_FRAGMENT = "sign up fragment";
 
     public static final String TAG = "Login fragment";
@@ -41,8 +44,11 @@ public class LoginFragment extends Fragment {
     private String passText;
 
     //// USER AND PASS COME FROM SIGN UP PAGE ////
-    String getUserName;
-    String getPassword;
+    String getUserName = "";
+    String getPassword = "";
+
+    String saveUser;
+    String savePass;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -71,7 +77,32 @@ public class LoginFragment extends Fragment {
         initViews(view);
         setUpListeners();
 
+        if (savedInstanceState!=null) {
+            getUserName = savedInstanceState.getString(BUNDLE_USER_COME_FROM_SIGN_UP);
+            getPassword = savedInstanceState.getString(BUNDLE_PASS_COME_FROM_SIGN_UP);
+            if (getUserName.isEmpty()) {
+                mUserInput.getEditText().setText(savedInstanceState.getString(BUNDLE_NAME_STRING));
+            } else {
+                mUserInput.getEditText().setText(getUserName);
+            }
+            if (getUserName.isEmpty()) {
+                mPasswordInput.getEditText().setText(savedInstanceState.getString(BUNDLE_PASS_STRING));
+            } else {
+                mPasswordInput.getEditText().setText(getPassword);
+            }
+        } else {
+            mUserInput.getEditText().setText(getUserName);
+            mPasswordInput.getEditText().setText(getPassword);
+        }
+
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveUser = mUserInput.getEditText().getText().toString();
+        savePass = mPasswordInput.getEditText().getText().toString();
     }
 
     @Override
@@ -86,6 +117,8 @@ public class LoginFragment extends Fragment {
             getUserName = data.getStringExtra(SignUpFragment.EXTRA_USER_NAME);
             getPassword = data.getStringExtra(SignUpFragment.EXTRA_PASS_WORD);
         }
+
+
     }
 
     private void initViews(View view) {
@@ -94,8 +127,6 @@ public class LoginFragment extends Fragment {
         mLoginButton = view.findViewById(R.id.login_btn);
         mSignUpButton = view.findViewById(R.id.create_account_btn);
 
-        mUserInput.getEditText().setText(getUserName);
-        mPasswordInput.getEditText().setText(getPassword);
     }
 
     private void setUpListeners() {
@@ -169,7 +200,9 @@ public class LoginFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(BUNDLE_NAME_STRING, mUserInput.getEditText().getText().toString());
-        outState.putString(BUNDLE_NAME_STRING, mUserInput.getEditText().getText().toString());
+        outState.putString(BUNDLE_NAME_STRING, saveUser);
+        outState.putString(BUNDLE_PASS_STRING, savePass);
+        outState.putString(BUNDLE_USER_COME_FROM_SIGN_UP, getUserName);
+        outState.putString(BUNDLE_PASS_COME_FROM_SIGN_UP, getPassword);
     }
 }

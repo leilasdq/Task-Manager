@@ -30,6 +30,7 @@ import java.util.GregorianCalendar;
  */
 public class DatePickerFragment extends DialogFragment {
     public static final String EXTRA_SEND_DATE = "com.example.homeworrrrrk9.Controller.crimeDate";
+    public static final String ARGS_TASK_DATE = "Task date";
     private AlertDialog mAlertDialog;
     private DatePicker mDatePicker;
     private Date mDate;
@@ -40,13 +41,20 @@ public class DatePickerFragment extends DialogFragment {
         // Required empty public constructor
     }
 
-    public static DatePickerFragment newInstance() {
+    public static DatePickerFragment newInstance(Date date) {
 
         Bundle args = new Bundle();
+        args.putSerializable(ARGS_TASK_DATE, date);
 
         DatePickerFragment fragment = new DatePickerFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mDate = (Date) getArguments().getSerializable(ARGS_TASK_DATE);
     }
 
     @NonNull
@@ -55,7 +63,6 @@ public class DatePickerFragment extends DialogFragment {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_date_picker, null, false);
 
         mTaskManager = new TaskManager();
-        mDate = mTaskManager.getDate();
         mDatePicker = view.findViewById(R.id.date_picker);
         initDatePicker();
 
