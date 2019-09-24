@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Task Manager</string>
-    <string name="username_edit_text">userName</string>
-    <string name="password_edit_text">PassWord</string>
+    <string name="username_edit_text">username</string>
+    <string name="password_edit_text">Password</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
