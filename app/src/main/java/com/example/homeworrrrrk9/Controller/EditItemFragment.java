@@ -66,6 +66,7 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
     private DateFormat timeFormat;
     private String dateStr;
     private String timeStr;
+    private Date tempDate;
     private State mState;
 
 
@@ -74,10 +75,10 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
     }
 
     public static EditItemFragment newInstance(TaskManager taskModel) {
-        
+
         Bundle args = new Bundle();
         args.putSerializable(ARGS_TASK_MANAGER_MODEL, taskModel);
-        
+
         EditItemFragment fragment = new EditItemFragment();
         fragment.setArguments(args);
         return fragment;
@@ -87,11 +88,11 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_show_item, null, false);
-        
+
         initViews(view);
         spinnerSetup();
 
-        if (getArguments()!=null){
+        if (getArguments() != null) {
             taskManager = (TaskManager) getArguments().getSerializable(ARGS_TASK_MANAGER_MODEL);
             title.getEditText().setText(taskManager.getTitle());
             description.getEditText().setText(taskManager.getDetail());
@@ -99,7 +100,7 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
             spinner.setPrompt(taskManager.getState().toString());
         }
 
-        if (savedInstanceState!=null){
+        if (savedInstanceState != null) {
             title.getEditText().setText(savedInstanceState.getString(BUNDLE_TITLE_TEXT));
             description.getEditText().setText(savedInstanceState.getString(BUNDLE_DETAIL_TEXT));
             date.setText(savedInstanceState.getString(BUNDLE_DATE_BTN_TEXT));
@@ -127,18 +128,17 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
     @Override
     public void onResume() {
         super.onResume();
-        final AlertDialog d = (AlertDialog)getDialog();
-        if(d != null) {
+        final AlertDialog d = (AlertDialog) getDialog();
+        if (d != null) {
             Button positiveButton = d.getButton(Dialog.BUTTON_POSITIVE);
             positiveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Boolean wantToCloseDialog;
-                    if (!titleValidate() | !detailValidate()){
+                    if (!titleValidate() | !detailValidate()) {
                         Toast.makeText(getContext(), "Fill required fields", Toast.LENGTH_SHORT).show();
                         wantToCloseDialog = false;
-                    }
-                    else{
+                    } else {
                         TasksRepository.deleteItem(taskManager);
                         mTaskManager.setTitle(title.getEditText().getText().toString());
                         mTaskManager.setDetail(description.getEditText().getText().toString());
@@ -147,7 +147,7 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
 
                         wantToCloseDialog = true;
                     }
-                    if(wantToCloseDialog){
+                    if (wantToCloseDialog) {
                         setDate();
                         d.dismiss();
                     }
@@ -171,19 +171,21 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
         if (resultCode != Activity.RESULT_OK || data == null)
             return;
 
-        else {
-            dateStr = date.getText().toString();
-            timeStr = time.getText().toString();
-            if (requestCode == GET_DATE_REQUEST_CODE) {
-                Date getDate = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_SEND_DATE);
-                dateStr = dateFormat.format(getDate);
-                date.setText(dateStr);
-            }
-            if (requestCode == GET_TIME_REQUEST_CODE) {
-                timeStr = data.getStringExtra(TimePickerFragment.EXTRA_SEND_TIME);
-                time.setText(timeStr);
-            }
+
+        dateStr = date.getText().toString();
+        timeStr = time.getText().toString();
+        if (requestCode == GET_DATE_REQUEST_CODE) {
+            Date getDate = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_SEND_DATE);
+            dateStr = dateFormat.format(getDate);
+            date.setText(dateStr);
         }
+        if (requestCode == GET_TIME_REQUEST_CODE) {
+            tempDate = (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_SEND_TIME);
+            DateFormat df = new SimpleDateFormat("hh:mm a");
+            timeStr = df.format(tempDate);
+            time.setText(timeStr);
+        }
+
     }
 
     @Override
@@ -193,8 +195,10 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
     }
 
     private void setDate() {
+        dateStr = date.getText().toString();
+        timeStr = time.getText().toString();
         DateFormat dft = new SimpleDateFormat("EEE, MMM d yyyy hh:mm a");
-        String date = dateStr + " " +  timeStr;
+        String date = dateStr + " " + timeStr;
         Date d = null;
         try {
             d = dft.parse(date);
@@ -208,12 +212,12 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
     private void stDateAndTimeBtn(TaskManager taskManager) {
         Date getDate = taskManager.getDate();
         String[] dateString = getDate.toString().split(" ");
-        String myDate = dateString[0] + ", " + dateString[1] + " " + dateString[2] + " " + dateString[dateString.length-1];
+        String myDate = dateString[0] + ", " + dateString[1] + " " + dateString[2] + " " + dateString[dateString.length - 1];
         String myTime = dateString[3];
         String[] changeDate = myTime.split(":");
         int changeDateFormat = Integer.parseInt(changeDate[0]);
         boolean isAM = true;
-        if (changeDateFormat>12) {
+        if (changeDateFormat > 12) {
             changeDateFormat -= 12;
             isAM = false;
         }
@@ -238,7 +242,7 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
 
         mTaskManager = new TaskManager();
 
-        if (mTaskManager!=null) {
+        if (mTaskManager != null) {
             title.getEditText().setText(mTaskManager.getTitle());
             description.getEditText().setText(mTaskManager.getDetail());
         }
@@ -265,7 +269,7 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
             }
         });
     }
-    
+
     private void spinnerSetup() {
         mStatusSpinnerItems.add(String.valueOf(State.TODO));
         mStatusSpinnerItems.add(String.valueOf(State.DOING));
@@ -284,19 +288,18 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
 
         if (item.equals(State.DONE.name())) {
             mState = State.DONE;
-        }
-        else if (item.equals(State.TODO.name())){
+        } else if (item.equals(State.TODO.name())) {
             mState = State.TODO;
-        }
-        else if (item.equals(State.DOING.name())){
+        } else if (item.equals(State.DOING.name())) {
             mState = State.DOING;
         }
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-        
+
     }
+
     private boolean titleValidate() {
         String titleText = title.getEditText().getText().toString();
 

@@ -85,12 +85,13 @@ public class TimePickerFragment extends DialogFragment {
         int min = mTimePicker.getCurrentMinute();
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, min);
-        SimpleDateFormat mSDF = new SimpleDateFormat("hh:mm a");
-        time = mSDF.format(calendar.getTime());
-        sendResult(time);
+        Date date = calendar.getTime();
+       /* SimpleDateFormat mSDF = new SimpleDateFormat("hh:mm a");
+        time = mSDF.format(calendar.getTime());*/
+        sendResult(date);
     }
 
-    private void sendResult(String getTime){
+    private void sendResult(Date getTime){
         Intent intent = new Intent();
         intent.putExtra(EXTRA_SEND_TIME, getTime);
 
