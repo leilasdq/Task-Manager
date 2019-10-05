@@ -191,6 +191,7 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
     @Override
     public void onDestroy() {
         super.onDestroy();
+        List<TaskManager> tasks = TasksRepository.getInstance(getContext()).getRepositoryList();
         getActivity().recreate();
     }
 

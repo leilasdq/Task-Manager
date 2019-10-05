@@ -93,7 +93,8 @@ public class TodoFragment extends Fragment {
     private void initUi(View view) {
         mRecyclerView = view.findViewById(R.id.todo_recycler);
         todoFab = view.findViewById(R.id.todo_fab);
-        models = TasksRepository.getInstance().getRepositoryList();
+//        models = new ArrayList<>();
+        models = TasksRepository.getInstance(getContext()).getRepositoryList();
         todoModels = new ArrayList<>();
         if (models.size()>0){
             for (int i = 0; i < models.size() ; i++) {
@@ -150,7 +151,11 @@ public class TodoFragment extends Fragment {
     }
 
     private class TodoAdapter extends RecyclerView.Adapter<TodoViewHolder>{
-        List<TaskManager> mList;
+        public void setList(List<TaskManager> list) {
+            mList = list;
+        }
+
+        private List<TaskManager> mList;
 
         public TodoAdapter(List<TaskManager> taskManagers) {
             mList = taskManagers;
@@ -186,7 +191,7 @@ public class TodoFragment extends Fragment {
     public void notifyAdapter(){
         if (adapter!=null){
             Log.e(TAG, "notifyAdapter: GRRRRR");
-            models = TasksRepository.getInstance().getRepositoryList();
+            models = TasksRepository.getInstance(getActivity()).getRepositoryList();
             if (models.size()>0){
                 for (int i = 0; i < models.size() ; i++) {
                     if (models.get(i).getState()== State.TODO) todoModels.add(models.get(i));

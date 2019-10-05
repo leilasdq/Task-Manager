@@ -8,15 +8,21 @@ import java.util.Date;
 import java.util.UUID;
 
 public class TaskManager implements Serializable {
+    private long taskId;
     private UUID mUUID;
     private String mTitle;
     private String mDetail;
     private Date mDate;
     private State mState;
+    private int userId;
 
     public TaskManager() {
-        mUUID = UUID.randomUUID();
+        this(UUID.randomUUID());
         mDate = Calendar.getInstance().getTime();
+    }
+
+    public TaskManager(UUID UUID) {
+        mUUID = UUID;
     }
 
     public UUID getUUID() {
@@ -53,5 +59,21 @@ public class TaskManager implements Serializable {
 
     public void setState(State state) {
         mState = state;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(long taskId) {
+        this.taskId = taskId;
     }
 }

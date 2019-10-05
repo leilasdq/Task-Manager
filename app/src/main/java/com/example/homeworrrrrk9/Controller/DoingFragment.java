@@ -92,7 +92,7 @@ public class DoingFragment extends Fragment {
 
     private void initUi(View view) {
         mRecyclerView = view.findViewById(R.id.doing_recycler);
-        models = TasksRepository.getInstance().getRepositoryList();
+        models = TasksRepository.getInstance(getContext()).getRepositoryList();
         doingFab = view.findViewById(R.id.doing_fab);
         doingModels = new ArrayList<>();
         if (models.size()>0){

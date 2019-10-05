@@ -90,7 +90,7 @@ public class ListsActivity extends AppCompatActivity {
                 System.exit(1);
                 return true;
             case R.id.delete_all:
-                final List<TaskManager> models = TasksRepository.getInstance().getRepositoryList();
+                final List<TaskManager> models = TasksRepository.getInstance(getApplicationContext()).getRepositoryList();
                 AlertDialog delete = new AlertDialog.Builder(this)
                         .setTitle("Delete all items")
                         .setMessage("All items will be delete.\nAre you sure?")

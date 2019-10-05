@@ -24,12 +24,14 @@ public class TasksOpenHelper extends SQLiteOpenHelper {
                 + TaskTable.Cols.TASKTITLE + ", "
                 + TaskTable.Cols.TASKDETAIL + ", "
                 + TaskTable.Cols.TASKDATE + ", "
-                + TaskTable.Cols.TASKSTATE
+                + TaskTable.Cols.TASKSTATE + ", "
+                + TaskTable.Cols.USERID
                 + ");"
         );
 
         sqLiteDatabase.execSQL("CREATE TABLE \"" + UserTale.USERTABLENAME + "\"("
                 + UserTale.Cols._USERID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + UserTale.Cols.USERUUID + ", "
                 + UserTale.Cols.USERNAME + ", "
                 + UserTale.Cols.USERPASSWORD
                 + ");"
