@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Adapter;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.homeworrrrrk9.Model.TaskManager;
@@ -34,9 +35,17 @@ public class ListsActivity extends AppCompatActivity {
     public static final String EXTRA_PASS_WORD = "com.example.homeworrrrrk9.Controller.PassWord";
     ViewPager mViewPager;
     TabLayout mTabLayout;
-    String user;
-    String pass;
-    FloatingActionButton addBtn;
+    private static String user;
+    private static String pass;
+
+    public static String getUser() {
+        return user;
+    }
+
+    public static String getPass() {
+        return pass;
+    }
+
 
     public static Intent newIntent(Context context, String userName, String passWord){
         Intent intent = new Intent(context, ListsActivity.class);
@@ -54,64 +63,8 @@ public class ListsActivity extends AppCompatActivity {
         user = getIntent().getStringExtra(EXTRA_USER_NAME);
         pass = getIntent().getStringExtra(EXTRA_PASS_WORD);
 
-//        addBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-////                Toast.makeText(ListsActivity.this, "Add clicked", Toast.LENGTH_SHORT).show();
-//                ShowItemFragment itemFragment = ShowItemFragment.newInstance();
-//                itemFragment.show(getSupportFragmentManager(), TAG_ADD_ITEM_FRAGMENTS);
-//            }
-//        });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.action_bar_item_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.search:
-                Toast.makeText(this, "Search clicked", Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.account:
-                //Toast.makeText(this, "Account clicked", Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.show_account:
-                AlertDialog alertDialog = new AlertDialog.Builder(this)
-                        .setTitle("Account detail")
-                        .setMessage("username: " + user + "\npassword: " + pass)
-                        .setNegativeButton("OK", null).create();
-                alertDialog.show();
-                return true;
-            case R.id.log_out:
-                System.exit(1);
-                return true;
-            case R.id.delete_all:
-                final List<TaskManager> models = TasksRepository.getInstance(getApplicationContext()).getRepositoryList();
-                AlertDialog delete = new AlertDialog.Builder(this)
-                        .setTitle("Delete all items")
-                        .setMessage("All items will be delete.\nAre you sure?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                if (models.size()>0){
-                                    TasksRepository.deleteAll();
-                                } else {
-                                    Toast.makeText(ListsActivity.this, "You didn't have any items", Toast.LENGTH_SHORT).show();
-                                }
-                                ListsActivity.this.recreate();
-                            }
-                        })
-                        .setNegativeButton("No", null).create();
-                delete.show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
     private void initViews(){
         mViewPager = findViewById(R.id.task_view_pager);

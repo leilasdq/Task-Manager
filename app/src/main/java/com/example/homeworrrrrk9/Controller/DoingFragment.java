@@ -1,6 +1,8 @@
 package com.example.homeworrrrrk9.Controller;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,8 +11,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Filter;
+import android.widget.Filterable;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +50,8 @@ public class DoingFragment extends Fragment {
     private DoingAdapter adapter;
     private FloatingActionButton doingFab;
 
+    private String user, pass;
+
     public static DoingFragment newInstance() {
         
         Bundle args = new Bundle();
@@ -65,6 +76,7 @@ public class DoingFragment extends Fragment {
         initUi(view);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        setHasOptionsMenu(true);
         adapter = new DoingAdapter(doingModels);
         mRecyclerView.setAdapter(adapter);
 
@@ -91,6 +103,8 @@ public class DoingFragment extends Fragment {
     }
 
     private void initUi(View view) {
+        user = ListsActivity.getUser();
+        pass = ListsActivity.getPass();
         mRecyclerView = view.findViewById(R.id.doing_recycler);
         models = TasksRepository.getInstance(getContext()).getRepositoryList();
         doingFab = view.findViewById(R.id.doing_fab);
@@ -149,11 +163,13 @@ public class DoingFragment extends Fragment {
         }
     }
 
-    private class DoingAdapter extends RecyclerView.Adapter<DoingViewHolder>{
+    private class DoingAdapter extends RecyclerView.Adapter<DoingViewHolder> implements Filterable {
         List<TaskManager> mList;
+        private List<TaskManager> fullList;
 
         public DoingAdapter(List<TaskManager> taskManagers) {
             mList = taskManagers;
+            fullList = new ArrayList<>(taskManagers);
         }
 
         @NonNull
@@ -172,6 +188,125 @@ public class DoingFragment extends Fragment {
         public int getItemCount() {
 //            Log.e(TAG, "getItemCount: " + mList.size() );
             return mList.size();
+        }
+
+        @Override
+        public Filter getFilter() {
+            return taskFilter;
+        }
+
+        private Filter taskFilter = new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                List<TaskManager> filterTasks = new ArrayList<>();
+
+                if (charSequence==null | charSequence.length()==0) {
+                    filterTasks.addAll(fullList);
+                } else {
+                    String filterPattern = charSequence.toString().toLowerCase().trim();
+
+                    for (TaskManager item :
+                            fullList) {
+                        if (item.getTitle().toLowerCase().contains(filterPattern)){
+                            filterTasks.add(item);
+                        }
+                    }
+                }
+
+                FilterResults results = new FilterResults();
+                results.values = filterTasks;
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                mList.clear();
+                mList.addAll((List) filterResults.values);
+                notifyDataSetChanged();
+            }
+        };
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.action_bar_item_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.search:
+                SearchView searchView = (SearchView) item.getActionView();
+                searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                searchView.setIconified(false);
+                searchView.setQueryHint("Search Here");
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String s) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String s) {
+                        adapter.getFilter().filter(s);
+                        adapter.notifyDataSetChanged();
+                        return false;
+                    }
+                });
+                searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+                    @Override
+                    public boolean onClose() {
+                        adapter.notifyDataSetChanged();
+                        return true;
+                    }
+                });
+//                searchView.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
+//                    @Override
+//                    public void onChildViewAdded(View view, View view1) {
+//                        notifyAdapter();
+//                    }
+//
+//                    @Override
+//                    public void onChildViewRemoved(View view, View view1) {
+//                        notifyAdapter();
+//                    }
+//                });
+                return true;
+            case R.id.account:
+                //Toast.makeText(this, "Account clicked", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.show_account:
+                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                        .setTitle("Account detail")
+                        .setMessage("username: " + user + "\npassword: " + pass)
+                        .setNegativeButton("OK", null).create();
+                alertDialog.show();
+                return true;
+            case R.id.log_out:
+                System.exit(1);
+                return true;
+            case R.id.delete_all:
+                final List<TaskManager> models = TasksRepository.getInstance(getActivity()).getRepositoryList();
+                AlertDialog delete = new AlertDialog.Builder(getActivity())
+                        .setTitle("Delete all items")
+                        .setMessage("All items will be delete.\nAre you sure?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (models.size()>0){
+                                    TasksRepository.deleteAll();
+                                    getActivity().recreate();
+                                } else {
+                                    Toast.makeText(getActivity(), "You didn't have any items", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        })
+                        .setNegativeButton("No", null).create();
+                delete.show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

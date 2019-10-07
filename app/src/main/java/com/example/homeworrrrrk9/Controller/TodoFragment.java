@@ -2,6 +2,8 @@ package com.example.homeworrrrrk9.Controller;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -13,8 +15,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Filter;
+import android.widget.Filterable;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +36,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -44,6 +54,9 @@ public class TodoFragment extends Fragment {
     private List<TaskManager> todoModels;
     private TodoAdapter adapter;
     private FloatingActionButton todoFab;
+
+    String user;
+    String pass;
 
 
     public static TodoFragment newInstance() {
@@ -70,6 +83,7 @@ public class TodoFragment extends Fragment {
         initUi(view);
         updateAdapter();
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        setHasOptionsMenu(true);
 
         todoFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +105,8 @@ public class TodoFragment extends Fragment {
     }
 
     private void initUi(View view) {
+        user = ListsActivity.getUser();
+        pass = ListsActivity.getPass();
         mRecyclerView = view.findViewById(R.id.todo_recycler);
         todoFab = view.findViewById(R.id.todo_fab);
 //        models = new ArrayList<>();
@@ -150,15 +166,17 @@ public class TodoFragment extends Fragment {
         }
     }
 
-    private class TodoAdapter extends RecyclerView.Adapter<TodoViewHolder>{
-        public void setList(List<TaskManager> list) {
-            mList = list;
-        }
+    private class TodoAdapter extends RecyclerView.Adapter<TodoViewHolder> implements Filterable {
+//        public void setList(List<TaskManager> list) {
+//            mList = list;
+//        }
 
         private List<TaskManager> mList;
+        private List<TaskManager> fullList;
 
         public TodoAdapter(List<TaskManager> taskManagers) {
             mList = taskManagers;
+            fullList = new ArrayList<>(taskManagers);
         }
 
         @NonNull
@@ -177,6 +195,42 @@ public class TodoFragment extends Fragment {
         public int getItemCount() {
             return mList.size();
         }
+
+        @Override
+        public Filter getFilter() {
+            return taskFilter;
+        }
+
+        private Filter taskFilter = new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                List<TaskManager> filterTasks = new ArrayList<>();
+
+                if (charSequence==null | charSequence.length()==0) {
+                    filterTasks.addAll(fullList);
+                } else {
+                    String filterPattern = charSequence.toString().toLowerCase().trim();
+
+                    for (TaskManager item :
+                            fullList) {
+                        if (item.getTitle().toLowerCase().contains(filterPattern)){
+                            filterTasks.add(item);
+                        }
+                    }
+                }
+
+                FilterResults results = new FilterResults();
+                results.values = filterTasks;
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                mList.clear();
+                mList.addAll((List) filterResults.values);
+                notifyDataSetChanged();
+            }
+        };
     }
 
     private void updateAdapter(){
@@ -198,7 +252,7 @@ public class TodoFragment extends Fragment {
                 }
             }
             adapter.notifyDataSetChanged();
-            adapter.notifyItemInserted(todoModels.size());
+            //adapter.notifyItemInserted(todoModels.size());
         }
     }
 
@@ -217,4 +271,89 @@ public class TodoFragment extends Fragment {
             }
         }
     }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.action_bar_item_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.search:
+                SearchView searchView = (SearchView) item.getActionView();
+                searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                searchView.setIconified(false);
+                searchView.setQueryHint("Search Here");
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String s) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String s) {
+                        adapter.getFilter().filter(s);
+                        adapter.notifyDataSetChanged();
+                        return false;
+                    }
+                });
+                searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+                    @Override
+                    public boolean onClose() {
+                        adapter.notifyDataSetChanged();
+                        return true;
+                    }
+                });
+//                searchView.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
+//                    @Override
+//                    public void onChildViewAdded(View view, View view1) {
+//                        notifyAdapter();
+//                    }
+//
+//                    @Override
+//                    public void onChildViewRemoved(View view, View view1) {
+//                        notifyAdapter();
+//                    }
+//                });
+                return true;
+            case R.id.account:
+                //Toast.makeText(this, "Account clicked", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.show_account:
+                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                        .setTitle("Account detail")
+                        .setMessage("username: " + user + "\npassword: " + pass)
+                        .setNegativeButton("OK", null).create();
+                alertDialog.show();
+                return true;
+            case R.id.log_out:
+                System.exit(1);
+                return true;
+            case R.id.delete_all:
+                final List<TaskManager> models = TasksRepository.getInstance(getActivity()).getRepositoryList();
+                AlertDialog delete = new AlertDialog.Builder(getActivity())
+                        .setTitle("Delete all items")
+                        .setMessage("All items will be delete.\nAre you sure?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (models.size()>0){
+                                    TasksRepository.deleteAll();
+                                    getActivity().recreate();
+                                } else {
+                                    Toast.makeText(getActivity(), "You didn't have any items", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        })
+                        .setNegativeButton("No", null).create();
+                delete.show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
 }
