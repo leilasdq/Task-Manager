@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.homeworrrrrk9.Model.User;
+
 import java.util.UUID;
 
 import androidx.annotation.Nullable;
@@ -40,9 +42,10 @@ public class TasksOpenHelper extends SQLiteOpenHelper {
                 + ");"
         );
 
-        sqLiteDatabase.execSQL("INSERT INTO \"" + USERTABLENAME + "\"("
+        User user = new User();
+        sqLiteDatabase.execSQL("INSERT INTO " + USERTABLENAME + " ("
                 + UserTale.Cols.USERUUID + ", " + UserTale.Cols.USERNAME + ", " + UserTale.Cols.USERPASSWORD + ")"
-                + " VALUES (" + UUID.randomUUID() + ", admin, admin)");
+                + " VALUES (\"" + user.getId().toString() + "\", \"admin\", \"admin\");");
     }
 
     @Override

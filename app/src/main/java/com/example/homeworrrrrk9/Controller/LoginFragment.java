@@ -16,9 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.example.homeworrrrrk9.Model.User;
 import com.example.homeworrrrrk9.R;
+import com.example.homeworrrrrk9.Repository.UserRepository;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+
+import java.util.List;
 
 
 /**
@@ -49,6 +53,10 @@ public class LoginFragment extends Fragment {
 
     String saveUser;
     String savePass;
+
+    private List<User> mUsers;
+    User mUser;
+    long userId;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -99,6 +107,13 @@ public class LoginFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mUsers = UserRepository.getInstance(getContext()).getRepositoryList();
+        validateUSerLogin(mUserInput.getEditText().getText().toString());
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         saveUser = mUserInput.getEditText().getText().toString();
@@ -136,12 +151,21 @@ public class LoginFragment extends Fragment {
             public void onClick(View view) {
                 if (!userValidate() | !passwordValidate()) {
                     Snackbar.make(getView(), "Fill the realignments..", Snackbar.LENGTH_LONG).show();
-                } else if (mUserInput.getEditText().getText().toString().equals(getUserName)
+                }
+                else if (mUserInput.getEditText().getText().toString().equals(getUserName)
                 && mPasswordInput.getEditText().getText().toString().equals(getPassword)){
                     Snackbar.make(getView(), "You are logged in", Snackbar.LENGTH_LONG).show();
-                    Intent intent = ListsActivity.newIntent(getActivity(), getUserName, getPassword);
+
+                    Intent intent = ListsActivity.newIntent(getActivity(), getUserName, getPassword, userId);
                     startActivity(intent);
-                } else {
+                }
+                else if (validateUSerLogin(mUserInput.getEditText().getText().toString())
+                && validatePasswordLogin(mPasswordInput.getEditText().getText().toString())){
+                    Snackbar.make(getView(), "You are logged in", Snackbar.LENGTH_LONG).show();
+                    Intent intent = ListsActivity.newIntent(getActivity(), getUserName, getPassword, userId);
+                    startActivity(intent);
+                }
+                else {
                     Snackbar.make(getView(), "invalid username or password", Snackbar.LENGTH_LONG).show();
                 }
             }
@@ -195,6 +219,25 @@ public class LoginFragment extends Fragment {
             mPasswordInput.setError(null);
             return true;
         }
+    }
+
+    private boolean validateUSerLogin(String userText){
+        for (int i = 0; i < mUsers.size() ; i++) {
+            if (mUsers.get(i).getUsername().equalsIgnoreCase(userText)){
+                userId = mUsers.get(i).getUserId();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean validatePasswordLogin(String passText){
+        for (int i = 0; i < mUsers.size() ; i++) {
+            if (mUsers.get(i).getPassword().equalsIgnoreCase(passText)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

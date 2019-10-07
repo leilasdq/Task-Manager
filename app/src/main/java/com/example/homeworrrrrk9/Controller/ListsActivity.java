@@ -33,10 +33,12 @@ public class ListsActivity extends AppCompatActivity {
     public static final String TAG_ADD_ITEM_FRAGMENTS = "Add item fragments";
     public static final String EXTRA_USER_NAME = "com.example.homeworrrrrk9.Controller.UserName";
     public static final String EXTRA_PASS_WORD = "com.example.homeworrrrrk9.Controller.PassWord";
+    public static final String EXTRA_USER_ID = "com.example.homeworrrrrk9.Controller.User id";
     ViewPager mViewPager;
     TabLayout mTabLayout;
     private static String user;
     private static String pass;
+    private static long userId;
 
     public static String getUser() {
         return user;
@@ -46,11 +48,15 @@ public class ListsActivity extends AppCompatActivity {
         return pass;
     }
 
+    public static long getUserId() {
+        return userId;
+    }
 
-    public static Intent newIntent(Context context, String userName, String passWord){
+    public static Intent newIntent(Context context, String userName, String passWord, long userId){
         Intent intent = new Intent(context, ListsActivity.class);
         intent.putExtra(EXTRA_USER_NAME, userName);
         intent.putExtra(EXTRA_PASS_WORD, passWord);
+        intent.putExtra(EXTRA_USER_ID, userId);
         return intent;
     }
 
@@ -62,13 +68,12 @@ public class ListsActivity extends AppCompatActivity {
         initViews();
         user = getIntent().getStringExtra(EXTRA_USER_NAME);
         pass = getIntent().getStringExtra(EXTRA_PASS_WORD);
-
+        userId = getIntent().getLongExtra(EXTRA_USER_ID, 1);
     }
 
 
     private void initViews(){
         mViewPager = findViewById(R.id.task_view_pager);
-        //addBtn = findViewById(R.id.floatingActionButton);
         mTabLayout = findViewById(R.id.task_tab_layout);
 
         TaskManagerFragmentPagerAdapter adapter = new TaskManagerFragmentPagerAdapter(getSupportFragmentManager());

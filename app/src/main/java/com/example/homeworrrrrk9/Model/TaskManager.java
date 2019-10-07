@@ -14,7 +14,7 @@ public class TaskManager implements Serializable {
     private String mDetail;
     private Date mDate;
     private State mState;
-    private int userId;
+    private long userId;
 
     public TaskManager() {
         this(UUID.randomUUID());
@@ -61,11 +61,11 @@ public class TaskManager implements Serializable {
         mState = state;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 

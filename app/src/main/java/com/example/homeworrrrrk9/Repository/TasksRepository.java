@@ -35,15 +35,28 @@ public class TasksRepository {
         database = new TasksOpenHelper(mContext).getWritableDatabase();
     }
 
-    public List<TaskManager> getRepositoryList() {
+    public List<TaskManager> getRepositoryList(long id) {
 //        sTaskManagers = new ArrayList<>();
-        Cursor cursor = database.query(TaskDatabaseSchema.TaskTable.TASKTABLENAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
+        Cursor cursor;
+        if (id==1) {
+            cursor = database.query(TaskDatabaseSchema.TaskTable.TASKTABLENAME,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
+        } else {
+            String where = TaskDatabaseSchema.TaskTable.Cols.USERID + " = ?";
+            String[] whereArgs = {String.valueOf(id)};
+            cursor = database.query(TaskDatabaseSchema.TaskTable.TASKTABLENAME,
+                    null,
+                    where,
+                    whereArgs,
+                    null,
+                    null,
+                    null);
+        }
         List<TaskManager> taskManagers = new ArrayList<>();
 
         try {
@@ -88,8 +101,8 @@ public class TasksRepository {
 
     public static void editItem(TaskManager taskManager){
         ContentValues values = getTasksContentValues(taskManager);
-        String[] whereArgs = {String.valueOf(taskManager.getUUID())};
-        database.update(TaskDatabaseSchema.TaskTable.TASKTABLENAME, values, TaskDatabaseSchema.TaskTable.Cols.TASKUUID + " = ?", whereArgs);
+        String[] whereArgs = {String.valueOf(taskManager.getTaskId())};
+        database.update(TaskDatabaseSchema.TaskTable.TASKTABLENAME, values, TaskDatabaseSchema.TaskTable.Cols._TASKID + " = ?", whereArgs);
     }
 
     public static void deleteItem (TaskManager taskManager){

@@ -57,6 +57,7 @@ public class TodoFragment extends Fragment {
 
     String user;
     String pass;
+    long userId;
 
 
     public static TodoFragment newInstance() {
@@ -107,10 +108,12 @@ public class TodoFragment extends Fragment {
     private void initUi(View view) {
         user = ListsActivity.getUser();
         pass = ListsActivity.getPass();
+        userId = ListsActivity.getUserId();
+
         mRecyclerView = view.findViewById(R.id.todo_recycler);
         todoFab = view.findViewById(R.id.todo_fab);
 //        models = new ArrayList<>();
-        models = TasksRepository.getInstance(getContext()).getRepositoryList();
+        models = TasksRepository.getInstance(getContext()).getRepositoryList(userId);
         todoModels = new ArrayList<>();
         if (models.size()>0){
             for (int i = 0; i < models.size() ; i++) {
@@ -245,7 +248,7 @@ public class TodoFragment extends Fragment {
     public void notifyAdapter(){
         if (adapter!=null){
             Log.e(TAG, "notifyAdapter: GRRRRR");
-            models = TasksRepository.getInstance(getActivity()).getRepositoryList();
+            models = TasksRepository.getInstance(getActivity()).getRepositoryList(userId);
             if (models.size()>0){
                 for (int i = 0; i < models.size() ; i++) {
                     if (models.get(i).getState()== State.TODO) todoModels.add(models.get(i));
@@ -324,7 +327,7 @@ public class TodoFragment extends Fragment {
             case R.id.show_account:
                 AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                         .setTitle("Account detail")
-                        .setMessage("username: " + user + "\npassword: " + pass)
+                        .setMessage("username: " + user + "\npassword: " + pass + "\nUserId: " + userId)
                         .setNegativeButton("OK", null).create();
                 alertDialog.show();
                 return true;
@@ -332,7 +335,7 @@ public class TodoFragment extends Fragment {
                 System.exit(1);
                 return true;
             case R.id.delete_all:
-                final List<TaskManager> models = TasksRepository.getInstance(getActivity()).getRepositoryList();
+                final List<TaskManager> models = TasksRepository.getInstance(getActivity()).getRepositoryList(userId);
                 AlertDialog delete = new AlertDialog.Builder(getActivity())
                         .setTitle("Delete all items")
                         .setMessage("All items will be delete.\nAre you sure?")

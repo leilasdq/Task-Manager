@@ -15,9 +15,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.example.homeworrrrrk9.Model.User;
 import com.example.homeworrrrrk9.R;
+import com.example.homeworrrrrk9.Repository.TasksRepository;
+import com.example.homeworrrrrk9.Repository.UserRepository;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+
+import java.util.List;
 
 
 /**
@@ -48,6 +53,8 @@ public class SignUpFragment extends Fragment {
     String saveName = "";
     String savePass = "";
 
+    List<User> mUsers;
+
 
     public SignUpFragment() {
         // Required empty public constructor
@@ -72,11 +79,6 @@ public class SignUpFragment extends Fragment {
             getUserText = getArguments().getString(ARGS_USERNAME_TEXT);
             getPassText = getArguments().getString(ARGS_PASSWORD_TEXT);
         }
-//
-//        if (savedInstanceState!=null){
-//            saveName = savedInstanceState.getString(BUNDLE_NAME_STRING);
-//            savePass = savedInstanceState.getString(BUNDLE_PASSWORD_STRING);
-//        }
 
     }
 
@@ -93,6 +95,12 @@ public class SignUpFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mUsers = UserRepository.getInstance(getActivity()).getRepositoryList();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         saveName = mUserInput.getEditText().getText().toString();
@@ -103,7 +111,16 @@ public class SignUpFragment extends Fragment {
         mSignButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendResult();
+                if (!validateUSerLogin(mUserInput.getEditText().getText().toString())) {
+                    User user = new User();
+                    user.setUsername(mUserInput.getEditText().getText().toString());
+                    user.setPassword(mPasswordInput.getEditText().getText().toString());
+                    UserRepository.addUsers(user);
+                    sendResult();
+                }
+                else {
+                    Snackbar.make(getView(), "This username had been taken\nChoose another one or login to your account.", Snackbar.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -169,6 +186,15 @@ public class SignUpFragment extends Fragment {
             mPasswordInput.setError(null);
             return true;
         }
+    }
+
+    private boolean validateUSerLogin(String userText){
+        for (int i = 0; i < mUsers.size() ; i++) {
+            if (mUsers.get(i).getUsername().equalsIgnoreCase(userText)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

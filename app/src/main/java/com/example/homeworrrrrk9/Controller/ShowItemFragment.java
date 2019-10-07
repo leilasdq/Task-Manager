@@ -154,6 +154,7 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
                         mTaskManager.setTitle(title.getEditText().getText().toString());
                         mTaskManager.setDetail(description.getEditText().getText().toString());
                         mTaskManager.setState(mState);
+                        mTaskManager.setUserId(ListsActivity.getUserId());
                         TasksRepository.addTodoItem(mTaskManager);
 
                         wantToCloseDialog = true;
@@ -170,21 +171,6 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
             });
         }
     }
-
-//    @Override
-//    public void onDismiss(@NonNull DialogInterface dialog) {
-//        super.onDismiss(dialog);
-//
-////        TodoFragment todoFragment = TodoFragment.newInstance();
-////        List fragments = getActivity().getSupportFragmentManager().getFragments();
-////        for (int i = 0; i < fragments.size() ; i++) {
-////            if (fragments.get(i) == todoFragment){
-////                todoFragment.notifyAdapter();
-////            }
-////        }
-//    }
-
-
 
     private void spinnerSetup() {
         mStatusSpinnerItems.add(String.valueOf(State.TODO));

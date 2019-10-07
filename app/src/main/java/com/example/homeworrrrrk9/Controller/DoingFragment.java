@@ -51,6 +51,7 @@ public class DoingFragment extends Fragment {
     private FloatingActionButton doingFab;
 
     private String user, pass;
+    private long userId;
 
     public static DoingFragment newInstance() {
         
@@ -105,8 +106,10 @@ public class DoingFragment extends Fragment {
     private void initUi(View view) {
         user = ListsActivity.getUser();
         pass = ListsActivity.getPass();
+        userId = ListsActivity.getUserId();
+
         mRecyclerView = view.findViewById(R.id.doing_recycler);
-        models = TasksRepository.getInstance(getContext()).getRepositoryList();
+        models = TasksRepository.getInstance(getContext()).getRepositoryList(userId);
         doingFab = view.findViewById(R.id.doing_fab);
         doingModels = new ArrayList<>();
         if (models.size()>0){
@@ -279,7 +282,7 @@ public class DoingFragment extends Fragment {
             case R.id.show_account:
                 AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                         .setTitle("Account detail")
-                        .setMessage("username: " + user + "\npassword: " + pass)
+                        .setMessage("username: " + user + "\npassword: " + pass+ "\nUserId: " + userId)
                         .setNegativeButton("OK", null).create();
                 alertDialog.show();
                 return true;
@@ -287,7 +290,7 @@ public class DoingFragment extends Fragment {
                 System.exit(1);
                 return true;
             case R.id.delete_all:
-                final List<TaskManager> models = TasksRepository.getInstance(getActivity()).getRepositoryList();
+                final List<TaskManager> models = TasksRepository.getInstance(getActivity()).getRepositoryList(userId);
                 AlertDialog delete = new AlertDialog.Builder(getActivity())
                         .setTitle("Delete all items")
                         .setMessage("All items will be delete.\nAre you sure?")

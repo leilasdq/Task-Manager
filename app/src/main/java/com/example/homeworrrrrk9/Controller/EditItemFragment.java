@@ -139,12 +139,11 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
                         Toast.makeText(getContext(), "Fill required fields", Toast.LENGTH_SHORT).show();
                         wantToCloseDialog = false;
                     } else {
-//                        TasksRepository.editItem(taskManager);
-//                        TasksRepository.deleteItem(taskManager);
                         mTaskManager.setTitle(title.getEditText().getText().toString());
                         mTaskManager.setDetail(description.getEditText().getText().toString());
                         mTaskManager.setState(mState);
-//                        TasksRepository.addTodoItem(mTaskManager);
+                        mTaskManager.setUserId(ListsActivity.getUserId());
+                        mTaskManager.setTaskId(taskManager.getTaskId());
 
                         wantToCloseDialog = true;
                     }
