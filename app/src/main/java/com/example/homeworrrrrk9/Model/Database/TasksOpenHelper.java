@@ -4,9 +4,12 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.UUID;
+
 import androidx.annotation.Nullable;
 
 import static com.example.homeworrrrrk9.Model.Database.TaskDatabaseSchema.*;
+import static com.example.homeworrrrrk9.Model.Database.TaskDatabaseSchema.UserTale.USERTABLENAME;
 
 public class TasksOpenHelper extends SQLiteOpenHelper {
 
@@ -29,13 +32,17 @@ public class TasksOpenHelper extends SQLiteOpenHelper {
                 + ");"
         );
 
-        sqLiteDatabase.execSQL("CREATE TABLE \"" + UserTale.USERTABLENAME + "\"("
+        sqLiteDatabase.execSQL("CREATE TABLE \"" + USERTABLENAME + "\"("
                 + UserTale.Cols._USERID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + UserTale.Cols.USERUUID + ", "
                 + UserTale.Cols.USERNAME + ", "
                 + UserTale.Cols.USERPASSWORD
                 + ");"
         );
+
+        sqLiteDatabase.execSQL("INSERT INTO \"" + USERTABLENAME + "\"("
+                + UserTale.Cols.USERUUID + ", " + UserTale.Cols.USERNAME + ", " + UserTale.Cols.USERPASSWORD + ")"
+                + " VALUES (" + UUID.randomUUID() + ", admin, admin)");
     }
 
     @Override

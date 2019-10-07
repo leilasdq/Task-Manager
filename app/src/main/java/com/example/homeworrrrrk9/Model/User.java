@@ -4,11 +4,16 @@ import java.util.UUID;
 
 public class User {
     private UUID id;
+    private long userId;
     private String username;
     private String password;
 
     public User() {
         id = UUID.randomUUID();
+    }
+
+    public User(UUID id) {
+        this.id = id;
     }
 
     public UUID getId() {
@@ -29,5 +34,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 }
