@@ -139,16 +139,18 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
                         Toast.makeText(getContext(), "Fill required fields", Toast.LENGTH_SHORT).show();
                         wantToCloseDialog = false;
                     } else {
-                        TasksRepository.deleteItem(taskManager);
+//                        TasksRepository.editItem(taskManager);
+//                        TasksRepository.deleteItem(taskManager);
                         mTaskManager.setTitle(title.getEditText().getText().toString());
                         mTaskManager.setDetail(description.getEditText().getText().toString());
                         mTaskManager.setState(mState);
-                        TasksRepository.addTodoItem(mTaskManager);
+//                        TasksRepository.addTodoItem(mTaskManager);
 
                         wantToCloseDialog = true;
                     }
                     if (wantToCloseDialog) {
                         setDate();
+                        TasksRepository.editItem(mTaskManager);
                         d.dismiss();
                     }
                 }
@@ -191,7 +193,6 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
     @Override
     public void onDestroy() {
         super.onDestroy();
-        List<TaskManager> tasks = TasksRepository.getInstance(getContext()).getRepositoryList();
         getActivity().recreate();
     }
 

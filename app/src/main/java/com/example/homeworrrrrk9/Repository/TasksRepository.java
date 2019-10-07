@@ -18,7 +18,7 @@ import java.util.UUID;
 
 public class TasksRepository {
     private static TasksRepository ourInstance;
-    static List<TaskManager> sTaskManagers;
+//    static List<TaskManager> sTaskManagers;
     private static Context mContext;
     private static SQLiteDatabase database;
 
@@ -32,13 +32,19 @@ public class TasksRepository {
     private TasksRepository(Context context) {
         mContext = context.getApplicationContext();
 
-        TasksOpenHelper helper = new TasksOpenHelper(context);
-        database = helper.getWritableDatabase();
+        database = new TasksOpenHelper(mContext).getWritableDatabase();
     }
 
     public List<TaskManager> getRepositoryList() {
-        sTaskManagers = new ArrayList<>();
-        Cursor cursor = database.query(TaskDatabaseSchema.TaskTable.TASKTABLENAME, null, null, null, null, null, null);
+//        sTaskManagers = new ArrayList<>();
+        Cursor cursor = database.query(TaskDatabaseSchema.TaskTable.TASKTABLENAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+        List<TaskManager> taskManagers = new ArrayList<>();
 
         try {
             cursor.moveToFirst();
@@ -63,7 +69,7 @@ public class TasksRepository {
                 taskManager.setState(state);
                 taskManager.setUserId(userId);
 
-                sTaskManagers.add(taskManager);
+                taskManagers.add(taskManager);
 
                 cursor.moveToNext();
             }
@@ -71,7 +77,7 @@ public class TasksRepository {
             cursor.close();
         }
 
-        return sTaskManagers;
+        return taskManagers;
     }
 
     public static void addTodoItem (TaskManager taskManager) {
@@ -81,33 +87,22 @@ public class TasksRepository {
     }
 
     public static void editItem(TaskManager taskManager){
-        deleteItem(taskManager);
-        sTaskManagers.add(taskManager);
+        ContentValues values = getTasksContentValues(taskManager);
+        String[] whereArgs = {String.valueOf(taskManager.getUUID())};
+        database.update(TaskDatabaseSchema.TaskTable.TASKTABLENAME, values, TaskDatabaseSchema.TaskTable.Cols.TASKUUID + " = ?", whereArgs);
     }
 
     public static void deleteItem (TaskManager taskManager){
         String[] whereArgs = {String.valueOf(taskManager.getTaskId())};
         database.delete(TaskDatabaseSchema.TaskTable.TASKTABLENAME, TaskDatabaseSchema.TaskTable.Cols._TASKID + " = ?", whereArgs);
-        //sTaskManagers.remove(taskManager);
     }
 
     public static void deleteAll(){
         database.delete(TaskDatabaseSchema.TaskTable.TASKTABLENAME, null, null);
-        //sTaskManagers.clear();
-    }
-
-    public static TaskManager getTask(UUID uuid){
-        for (TaskManager task : sTaskManagers) {
-            if (task.getUUID().equals(uuid))
-                return task;
-        }
-
-        return null;
     }
 
     private static ContentValues getTasksContentValues(TaskManager taskManager){
         ContentValues contentValues = new ContentValues();
-        contentValues.put(TaskDatabaseSchema.TaskTable.Cols._TASKID, taskManager.getTaskId());
         contentValues.put(TaskDatabaseSchema.TaskTable.Cols.TASKUUID, taskManager.getUUID().toString());
         contentValues.put(TaskDatabaseSchema.TaskTable.Cols.TASKTITLE, taskManager.getTitle());
         contentValues.put(TaskDatabaseSchema.TaskTable.Cols.TASKDETAIL, taskManager.getDetail());
