@@ -181,9 +181,10 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
             date.setText(dateStr);
         }
         if (requestCode == GET_TIME_REQUEST_CODE) {
-            tempDate = (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_SEND_TIME);
-            DateFormat df = new SimpleDateFormat("hh:mm a");
-            timeStr = df.format(tempDate);
+            //tempDate = (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_SEND_TIME);
+            //DateFormat df = new SimpleDateFormat("hh:mm a");
+            //timeStr = df.format(tempDate);
+            timeStr = data.getStringExtra(TimePickerFragment.EXTRA_SEND_TIME);
             time.setText(timeStr);
         }
 

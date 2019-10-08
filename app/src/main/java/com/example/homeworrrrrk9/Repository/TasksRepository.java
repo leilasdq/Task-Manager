@@ -3,7 +3,9 @@ package com.example.homeworrrrrk9.Repository;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.homeworrrrrk9.Model.Database.TaskDatabaseSchema;
 import com.example.homeworrrrrk9.Model.Database.TasksOpenHelper;
@@ -21,6 +23,7 @@ public class TasksRepository {
 //    static List<TaskManager> sTaskManagers;
     private static Context mContext;
     private static SQLiteDatabase database;
+    String TAG = "repo";
 
     public static TasksRepository getInstance(Context context) {
         if (ourInstance == null) {
@@ -47,17 +50,18 @@ public class TasksRepository {
                     null,
                     null);
         } else {
-            String where = TaskDatabaseSchema.TaskTable.Cols.USERID + " = ?";
-            String[] whereArgs = {String.valueOf(id)};
+            //String[] whereArgs = {"" + id + ""};
             cursor = database.query(TaskDatabaseSchema.TaskTable.TASKTABLENAME,
                     null,
-                    where,
-                    whereArgs,
+                    TaskDatabaseSchema.TaskTable.Cols.USERID + " + " +String.valueOf(id),
+                    null,
                     null,
                     null,
                     null);
         }
         List<TaskManager> taskManagers = new ArrayList<>();
+        String str = DatabaseUtils.dumpCursorToString(cursor);
+        Log.e(TAG, "getRepositoryList: " + str);
 
         try {
             cursor.moveToFirst();
