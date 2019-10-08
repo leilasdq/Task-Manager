@@ -162,7 +162,7 @@ public class TodoFragment extends Fragment {
 
             //roundTxt.setText(mTaskManager.getTitle().charAt(0));
             titleTxt.setText(mTaskManager.getTitle());
-            roundTxt.setText(String.valueOf(mTaskManager.getTitle().charAt(0)));
+            roundTxt.setText(String.valueOf(mTaskManager.getTitle().charAt(0)).toUpperCase());
             descriptionTxt.setText(mTaskManager.getDetail());
             dateTxt.setText(date.format(mTaskManager.getDate()));
             timeTxt.setText(time.format(mTaskManager.getDate()));

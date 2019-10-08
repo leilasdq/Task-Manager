@@ -155,12 +155,12 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
                         mTaskManager.setDetail(description.getEditText().getText().toString());
                         mTaskManager.setState(mState);
                         mTaskManager.setUserId(ListsActivity.getUserId());
-                        TasksRepository.addTodoItem(mTaskManager);
 
                         wantToCloseDialog = true;
                     }
                     if(wantToCloseDialog){
                         setDate();
+                        TasksRepository.addTodoItem(mTaskManager);
                         Intent intent = new Intent();
                         intent.putExtra(EXTRA_FORCE_NOTIFY, true);
                         Fragment fragment = getTargetFragment();

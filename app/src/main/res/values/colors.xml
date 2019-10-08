@@ -8,6 +8,6 @@
     <color name="btn_base_color">#3D5AFE</color>
     <color name="btn_clicked_color">#2042FD</color>
 
-    <color name="recycle_background">#BBDEFB</color>
-    <color name="text_view_back">#2962FF</color>
+    <color name="recycle_background">#ECF5FD</color>
+    <color name="text_view_back">#7396F8</color>
 </resources>
