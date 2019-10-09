@@ -309,17 +309,18 @@ public class TodoFragment extends Fragment {
                         return true;
                     }
                 });
-//                searchView.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
-//                    @Override
-//                    public void onChildViewAdded(View view, View view1) {
-//                        notifyAdapter();
-//                    }
-//
-//                    @Override
-//                    public void onChildViewRemoved(View view, View view1) {
-//                        notifyAdapter();
-//                    }
-//                });
+                item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                        notifyAdapter();
+                        return true;
+                    }
+                });
                 return true;
             case R.id.account:
                 //Toast.makeText(this, "Account clicked", Toast.LENGTH_SHORT).show();

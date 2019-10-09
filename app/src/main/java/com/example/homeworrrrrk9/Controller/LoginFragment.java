@@ -224,7 +224,7 @@ public class LoginFragment extends Fragment {
     private boolean validateUSerLogin(String userText){
         for (int i = 0; i < mUsers.size() ; i++) {
             if (mUsers.get(i).getUsername().equalsIgnoreCase(userText)){
-                userId = mUsers.get(i).getUserId();
+                userId = mUsers.get(i).get_userId();
                 return true;
             }
         }

@@ -38,6 +38,11 @@ public class TaskManagerFragmentPagerAdapter extends FragmentStatePagerAdapter {
         return 3;
     }
 
+    @Override
+    public int getItemPosition(@NonNull Object object) {
+        return POSITION_NONE;
+    }
+
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {

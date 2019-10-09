@@ -53,7 +53,7 @@ public class UserRepository {
                 UUID uuid = UUID.fromString(strUuid);
 
                 User user = new User(uuid);
-                user.setUserId(userId);
+                user.set_userId(userId);
                 user.setUsername(username);
                 user.setPassword(password);
 

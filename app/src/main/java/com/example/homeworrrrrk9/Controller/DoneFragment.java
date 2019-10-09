@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -264,17 +265,18 @@ public class DoneFragment extends Fragment {
                         return true;
                     }
                 });
-//                searchView.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
-//                    @Override
-//                    public void onChildViewAdded(View view, View view1) {
-//                        notifyAdapter();
-//                    }
-//
-//                    @Override
-//                    public void onChildViewRemoved(View view, View view1) {
-//                        notifyAdapter();
-//                    }
-//                });
+                item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                        notifyAdapter();
+                        return true;
+                    }
+                });
                 return true;
             case R.id.account:
                 //Toast.makeText(this, "Account clicked", Toast.LENGTH_SHORT).show();
@@ -310,6 +312,19 @@ public class DoneFragment extends Fragment {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void notifyAdapter(){
+        if (adapter!=null){
+            models = TasksRepository.getInstance(getActivity()).getRepositoryList(userId);
+            if (models.size()>0){
+                for (int i = 0; i < models.size() ; i++) {
+                    if (models.get(i).getState()== State.TODO) doneModels.add(models.get(i));
+                }
+            }
+            adapter.notifyDataSetChanged();
+            //adapter.notifyItemInserted(todoModels.size());
         }
     }
 
