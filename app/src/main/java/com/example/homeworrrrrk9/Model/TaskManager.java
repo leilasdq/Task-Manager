@@ -1,15 +1,14 @@
 package com.example.homeworrrrrk9.Model;
 
-import com.example.homeworrrrrk9.Model.GreenDaoHandler.StateConverter;
+import com.example.homeworrrrrk9.Model.Database.GreenDaoHandler.StateConverter;
 import com.example.homeworrrrrk9.State;
-import com.example.homeworrrrrk9.Model.GreenDaoHandler.UUIDConverter;
+import com.example.homeworrrrrk9.Model.Database.GreenDaoHandler.UUIDConverter;
 
 import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Index;
 import org.greenrobot.greendao.annotation.Property;
-import org.greenrobot.greendao.annotation.ToMany;
 import org.greenrobot.greendao.annotation.ToOne;
 
 import java.io.Serializable;
@@ -18,14 +17,13 @@ import java.util.Date;
 import java.util.UUID;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
-import org.greenrobot.greendao.annotation.NotNull;
 
 @Entity (nameInDb = "Task")
 public class TaskManager implements Serializable {
     private static final long serialVersionUID = 42L;
     
     @Id (autoincrement = true)
-    private long _taskId;
+    private Long _taskId;
     
     @Property (nameInDb = "Task_UUID")
     @Index (unique = true)
@@ -46,7 +44,7 @@ public class TaskManager implements Serializable {
     private State mState;
 
     @Property (nameInDb = "User_id")
-    private long userId;
+    private Long userId;
 
     @ToOne(joinProperty = "userId")
     private User mUser;
@@ -71,9 +69,9 @@ public class TaskManager implements Serializable {
         mUUID = UUID;
     }
 
-    @Generated(hash = 1807937856)
-    public TaskManager(long _taskId, UUID mUUID, String mTitle, String mDetail,
-            Date mDate, State mState, long userId) {
+    @Generated(hash = 1764583454)
+    public TaskManager(Long _taskId, UUID mUUID, String mTitle, String mDetail,
+            Date mDate, State mState, Long userId) {
         this._taskId = _taskId;
         this.mUUID = mUUID;
         this.mTitle = mTitle;
@@ -119,27 +117,27 @@ public class TaskManager implements Serializable {
         mState = state;
     }
 
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
-    public long getTaskId() {
+    public Long getTaskId() {
         return _taskId;
     }
 
-    public void setTaskId(long taskId) {
+    public void setTaskId(Long taskId) {
         this._taskId = taskId;
     }
 
-    public long get_taskId() {
+    public Long get_taskId() {
         return this._taskId;
     }
 
-    public void set_taskId(long _taskId) {
+    public void set_taskId(Long _taskId) {
         this._taskId = _taskId;
     }
 
@@ -184,9 +182,9 @@ public class TaskManager implements Serializable {
     }
 
     /** To-one relationship, resolved on first access. */
-    @Generated(hash = 395820747)
+    @Generated(hash = 59229727)
     public User getMUser() {
-        long __key = this.userId;
+        Long __key = this.userId;
         if (mUser__resolvedKey == null || !mUser__resolvedKey.equals(__key)) {
             final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
@@ -203,15 +201,11 @@ public class TaskManager implements Serializable {
     }
 
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 112973830)
-    public void setMUser(@NotNull User mUser) {
-        if (mUser == null) {
-            throw new DaoException(
-                    "To-one property 'userId' has not-null constraint; cannot set to-one to null");
-        }
+    @Generated(hash = 901111778)
+    public void setMUser(User mUser) {
         synchronized (this) {
             this.mUser = mUser;
-            userId = mUser.get_userId();
+            userId = mUser == null ? null : mUser.get_userId();
             mUser__resolvedKey = userId;
         }
     }
@@ -258,4 +252,5 @@ public class TaskManager implements Serializable {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getTaskManagerDao() : null;
     }
+
 }

@@ -1,4 +1,4 @@
-package com.example.homeworrrrrk9.Model.GreenDaoHandler;
+package com.example.homeworrrrrk9.Model.Database.GreenDaoHandler;
 
 import org.greenrobot.greendao.converter.PropertyConverter;
 

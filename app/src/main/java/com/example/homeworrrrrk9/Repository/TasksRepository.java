@@ -1,29 +1,21 @@
 package com.example.homeworrrrrk9.Repository;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import com.example.homeworrrrrk9.Model.Database.TaskDatabaseSchema;
-import com.example.homeworrrrrk9.Model.Database.TasksOpenHelper;
+import com.example.homeworrrrrk9.Model.DaoMaster;
+import com.example.homeworrrrrk9.Model.DaoSession;
+import com.example.homeworrrrrk9.Model.Database.GreenDaoHandler.TaskDaoOpenHelper;
 import com.example.homeworrrrrk9.Model.TaskManager;
-import com.example.homeworrrrrk9.Model.User;
-import com.example.homeworrrrrk9.State;
+import com.example.homeworrrrrk9.Model.TaskManagerDao;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 public class TasksRepository {
     private static TasksRepository ourInstance;
-//    static List<TaskManager> sTaskManagers;
     private static Context mContext;
-    private static SQLiteDatabase database;
-    String TAG = "repo";
+    private static TaskManagerDao taaskDao;
 
     public static TasksRepository getInstance(Context context) {
         if (ourInstance == null) {
@@ -35,99 +27,38 @@ public class TasksRepository {
     private TasksRepository(Context context) {
         mContext = context.getApplicationContext();
 
-        database = new TasksOpenHelper(mContext).getWritableDatabase();
+        SQLiteDatabase database =new TaskDaoOpenHelper(mContext).getWritableDatabase();
+        DaoMaster daoMaster = new DaoMaster(database);
+        DaoSession daoSession = daoMaster.newSession();
+        taaskDao = daoSession.getTaskManagerDao();
     }
 
     public List<TaskManager> getRepositoryList(long id) {
-//        sTaskManagers = new ArrayList<>();
-        Cursor cursor;
-        if (id==1) {
-            cursor = database.query(TaskDatabaseSchema.TaskTable.TASKTABLENAME,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null);
-        } else {
-            //String[] whereArgs = {"" + id + ""};
-            cursor = database.query(TaskDatabaseSchema.TaskTable.TASKTABLENAME,
-                    null,
-                    TaskDatabaseSchema.TaskTable.Cols.USERID + " + " +String.valueOf(id),
-                    null,
-                    null,
-                    null,
-                    null);
-        }
         List<TaskManager> taskManagers = new ArrayList<>();
-        String str = DatabaseUtils.dumpCursorToString(cursor);
-        Log.e(TAG, "getRepositoryList: " + str);
 
-        try {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()){
-                long taskId = cursor.getLong(cursor.getColumnIndex(TaskDatabaseSchema.TaskTable.Cols._TASKID));
-                String stringUuid = cursor.getString(cursor.getColumnIndex(TaskDatabaseSchema.TaskTable.Cols.TASKUUID));
-                String title = cursor.getString(cursor.getColumnIndex(TaskDatabaseSchema.TaskTable.Cols.TASKTITLE));
-                String detail = cursor.getString(cursor.getColumnIndex(TaskDatabaseSchema.TaskTable.Cols.TASKDETAIL));
-                long longDate = cursor.getLong(cursor.getColumnIndex(TaskDatabaseSchema.TaskTable.Cols.TASKDATE));
-                String stringState = cursor.getString(cursor.getColumnIndex(TaskDatabaseSchema.TaskTable.Cols.TASKSTATE));
-                int userId = cursor.getInt(cursor.getColumnIndex(TaskDatabaseSchema.TaskTable.Cols.USERID));
-
-                UUID uuid = UUID.fromString(stringUuid);
-                Date date = new Date(longDate);
-                State state = State.valueOf(stringState);
-
-                TaskManager taskManager = new TaskManager(uuid);
-                taskManager.setTaskId(taskId);
-                taskManager.setTitle(title);
-                taskManager.setDetail(detail);
-                taskManager.setDate(date);
-                taskManager.setState(state);
-                taskManager.setUserId(userId);
-
-                taskManagers.add(taskManager);
-
-                cursor.moveToNext();
-            }
-        } finally {
-            cursor.close();
+        if (id == 1){
+            taskManagers = taaskDao.loadAll();
+        } else {
+            taskManagers = taaskDao.queryBuilder().where(TaskManagerDao.Properties.UserId.eq(id)).list();
         }
 
         return taskManagers;
     }
 
     public static void addTodoItem (TaskManager taskManager) {
-        ContentValues values = getTasksContentValues(taskManager);
-        database.insert(TaskDatabaseSchema.TaskTable.TASKTABLENAME, null, values);
-        //sTaskManagers.add(taskManager);
+        taaskDao.insert(taskManager);
     }
 
     public static void editItem(TaskManager taskManager){
-        ContentValues values = getTasksContentValues(taskManager);
-        String[] whereArgs = {String.valueOf(taskManager.getTaskId())};
-        database.update(TaskDatabaseSchema.TaskTable.TASKTABLENAME, values, TaskDatabaseSchema.TaskTable.Cols._TASKID + " = ?", whereArgs);
+        taaskDao.update(taskManager);
     }
 
     public static void deleteItem (TaskManager taskManager){
-        String[] whereArgs = {String.valueOf(taskManager.getTaskId())};
-        database.delete(TaskDatabaseSchema.TaskTable.TASKTABLENAME, TaskDatabaseSchema.TaskTable.Cols._TASKID + " = ?", whereArgs);
+        taaskDao.delete(taskManager);
     }
 
     public static void deleteAll(){
-        database.delete(TaskDatabaseSchema.TaskTable.TASKTABLENAME, null, null);
-    }
-
-    private static ContentValues getTasksContentValues(TaskManager taskManager){
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(TaskDatabaseSchema.TaskTable.Cols.TASKUUID, taskManager.getUUID().toString());
-        contentValues.put(TaskDatabaseSchema.TaskTable.Cols.TASKTITLE, taskManager.getTitle());
-        contentValues.put(TaskDatabaseSchema.TaskTable.Cols.TASKDETAIL, taskManager.getDetail());
-        contentValues.put(TaskDatabaseSchema.TaskTable.Cols.TASKDATE, taskManager.getDate().getTime());
-        contentValues.put(TaskDatabaseSchema.TaskTable.Cols.TASKSTATE, taskManager.getState().toString());
-        contentValues.put(TaskDatabaseSchema.TaskTable.Cols.USERID, taskManager.getUserId());
-
-        return contentValues;
+        taaskDao.deleteAll();
     }
 
 }

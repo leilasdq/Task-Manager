@@ -1,6 +1,6 @@
 package com.example.homeworrrrrk9.Model;
 
-import com.example.homeworrrrrk9.Model.GreenDaoHandler.UUIDConverter;
+import com.example.homeworrrrrk9.Model.Database.GreenDaoHandler.UUIDConverter;
 
 import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
@@ -21,7 +21,7 @@ public class User {
     private UUID id;
 
     @Id (autoincrement = true)
-    private long _userId;
+    private Long _userId;
 
     @Property (nameInDb = "Username")
     @NotNull
@@ -39,8 +39,8 @@ public class User {
         this.id = id;
     }
 
-    @Generated(hash = 1434468888)
-    public User(UUID id, long _userId, @NotNull String username,
+    @Generated(hash = 1866137501)
+    public User(UUID id, Long _userId, @NotNull String username,
             @NotNull String password) {
         this.id = id;
         this._userId = _userId;
@@ -68,11 +68,11 @@ public class User {
         this.password = password;
     }
 
-    public long get_userId() {
+    public Long get_userId() {
         return _userId;
     }
 
-    public void set_userId(long _userId) {
+    public void set_userId(Long _userId) {
         this._userId = _userId;
     }
 
