@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -133,6 +134,7 @@ public class TodoFragment extends Fragment {
         private TextView descriptionTxt;
         private TextView dateTxt;
         private TextView timeTxt;
+        private ImageButton share;
 
         private TaskManager mTaskManager;
 
@@ -144,6 +146,7 @@ public class TodoFragment extends Fragment {
             descriptionTxt = itemView.findViewById(R.id.description_text);
             dateTxt = itemView.findViewById(R.id.date_txt);
             timeTxt = itemView.findViewById(R.id.time_text);
+            share = itemView.findViewById(R.id.share);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -166,6 +169,24 @@ public class TodoFragment extends Fragment {
             descriptionTxt.setText(mTaskManager.getDetail());
             dateTxt.setText(date.format(mTaskManager.getDate()));
             timeTxt.setText(time.format(mTaskManager.getDate()));
+
+            share.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("text/plain");
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "I took a task for managing my ToDo lists.let's take a look at it: ");
+                    intent.putExtra(Intent.EXTRA_TEXT, getTaskReport());
+                    intent = Intent.createChooser(intent, "Choose your app to share");
+                    startActivity(intent);
+                }
+            });
+        }
+
+        private  String getTaskReport(){
+            String dateString = new SimpleDateFormat("yyyy/MM/dd").format(mTaskManager.getDate());
+            return "Task title is " + mTaskManager.getTitle() + " and detail is: " + mTaskManager.getDetail() +
+                    ".\nMy task state is " + mTaskManager.getState() + " so I should do it on " + dateString;
         }
     }
 

@@ -3,6 +3,7 @@ package com.example.homeworrrrrk9.Controller;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,7 +11,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -131,6 +132,7 @@ public class DoingFragment extends Fragment {
         private TextView descriptionTxt;
         private TextView dateTxt;
         private TextView timeTxt;
+        private ImageButton share;
 
         private TaskManager mTaskManager;
 
@@ -142,6 +144,7 @@ public class DoingFragment extends Fragment {
             descriptionTxt = itemView.findViewById(R.id.description_text);
             dateTxt = itemView.findViewById(R.id.date_txt);
             timeTxt = itemView.findViewById(R.id.time_text);
+            share = itemView.findViewById(R.id.share);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -164,6 +167,24 @@ public class DoingFragment extends Fragment {
             descriptionTxt.setText(mTaskManager.getDetail());
             dateTxt.setText(date.format(mTaskManager.getDate()));
             timeTxt.setText(time.format(mTaskManager.getDate()));
+
+            share.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("text/plain");
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "I took a task for managing my ToDo lists.let's take a look at it: ");
+                    intent.putExtra(Intent.EXTRA_TEXT, getTaskReport());
+                    intent = Intent.createChooser(intent, "Choose your app to share");
+                    startActivity(intent);
+                }
+            });
+        }
+
+        private  String getTaskReport(){
+            String dateString = new SimpleDateFormat("yyyy/MM/dd").format(mTaskManager.getDate());
+            return "Task title is " + mTaskManager.getTitle() + " and detail is: " + mTaskManager.getDetail() +
+                    ".\nMy task state is " + mTaskManager.getState() + " so I am doing it from " + dateString + " till now.";
         }
     }
 
@@ -265,18 +286,17 @@ public class DoingFragment extends Fragment {
                         return true;
                     }
                 });
-                item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-                    @Override
-                    public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                        return true;
-                    }
-
-                    @Override
-                    public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                        notifyAdapter();
-                        return true;
-                    }
-                });
+//                searchView.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
+//                    @Override
+//                    public void onChildViewAdded(View view, View view1) {
+//                        notifyAdapter();
+//                    }
+//
+//                    @Override
+//                    public void onChildViewRemoved(View view, View view1) {
+//                        notifyAdapter();
+//                    }
+//                });
                 return true;
             case R.id.account:
                 //Toast.makeText(this, "Account clicked", Toast.LENGTH_SHORT).show();
@@ -312,19 +332,6 @@ public class DoingFragment extends Fragment {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    public void notifyAdapter(){
-        if (adapter!=null){
-            models = TasksRepository.getInstance(getActivity()).getRepositoryList(userId);
-            if (models.size()>0){
-                for (int i = 0; i < models.size() ; i++) {
-                    if (models.get(i).getState()== State.TODO) doingModels.add(models.get(i));
-                }
-            }
-            adapter.notifyDataSetChanged();
-            //adapter.notifyItemInserted(todoModels.size());
         }
     }
 
