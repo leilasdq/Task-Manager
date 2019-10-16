@@ -51,7 +51,9 @@
                     android:layout_height="wrap_content"
                     android:drawableLeft="@drawable/ic_action_username"
                     android:hint="@string/username_edit_text"
-                    android:textColorHint="@android:color/secondary_text_light" />
+                    android:textColorHint="@android:color/secondary_text_light"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                    />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -61,15 +63,17 @@
                 android:layout_marginTop="4dp"
                 app:errorEnabled="true"
                 app:passwordToggleEnabled="true"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                 >
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_action_password"
+                    android:drawableStart="@drawable/ic_action_password"
                     android:hint="@string/password_edit_text"
                     android:inputType="textPassword"
-                    android:textColorHint="@android:color/secondary_text_light" />
+                    android:textColorHint="@android:color/secondary_text_light"
+                    android:drawableLeft="@drawable/ic_action_password" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -84,6 +88,7 @@
         </LinearLayout>
 
         <TextView
+            android:fontFamily="cursive"
             android:id="@+id/login_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
