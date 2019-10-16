@@ -40,6 +40,8 @@ public class ListsActivity extends AppCompatActivity {
     private static String pass;
     private static long userId;
 
+    TaskManagerFragmentPagerAdapter adapter;
+
     public static String getUser() {
         return user;
     }
@@ -75,9 +77,25 @@ public class ListsActivity extends AppCompatActivity {
     private void initViews(){
         mViewPager = findViewById(R.id.task_view_pager);
         mTabLayout = findViewById(R.id.task_tab_layout);
-
-        TaskManagerFragmentPagerAdapter adapter = new TaskManagerFragmentPagerAdapter(getSupportFragmentManager());
+        adapter = new TaskManagerFragmentPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(adapter);
         mTabLayout.setupWithViewPager(mViewPager);
+
+//        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//            @Override
+//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+////                adapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onPageSelected(int position) {
+//                adapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int state) {
+////                adapter.notifyDataSetChanged();
+//            }
+//        });
     }
 }
