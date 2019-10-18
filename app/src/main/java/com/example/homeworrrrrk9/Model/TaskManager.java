@@ -24,6 +24,17 @@ public class TaskManager implements Serializable {
     
     @Id (autoincrement = true)
     private Long _taskId;
+
+    public String getPhotoPath() {
+        return photoPath;
+    }
+
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
+    }
+
+    @Property (nameInDb = "photo_path")
+    private String photoPath;
     
     @Property (nameInDb = "Task_UUID")
     @Index (unique = true)
@@ -69,10 +80,11 @@ public class TaskManager implements Serializable {
         mUUID = UUID;
     }
 
-    @Generated(hash = 1764583454)
-    public TaskManager(Long _taskId, UUID mUUID, String mTitle, String mDetail,
-            Date mDate, State mState, Long userId) {
+    @Generated(hash = 269137197)
+    public TaskManager(Long _taskId, String photoPath, UUID mUUID, String mTitle,
+            String mDetail, Date mDate, State mState, Long userId) {
         this._taskId = _taskId;
+        this.photoPath = photoPath;
         this.mUUID = mUUID;
         this.mTitle = mTitle;
         this.mDetail = mDetail;

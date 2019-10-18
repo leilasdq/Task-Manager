@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -37,6 +40,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import static android.provider.MediaStore.ACTION_IMAGE_CAPTURE;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -45,6 +50,7 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
     public static final String TAG_SHOW_TIME_PICKER = "Show time picker";
     public static final int GET_DATE_REQUEST_CODE = 2;
     public static final int GET_TIME_REQUEST_CODE = 3;
+    public static final int REQUEST_IMAGE_CAPTURE = 4;
     public static final String EXTRA_FORCE_NOTIFY = "Force notify";
     public static final String BUNDLE_TITLE_TEXT = "Title text";
     public static final String BUNDLE_DETAIL_TEXT = "Detail text";
@@ -59,6 +65,8 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
     private TextInputLayout description;
     private Button date;
     private Button time;
+    private ImageButton takePhoto;
+    private ImageView setPhoto;
     private Spinner spinner;
     private List<String> mStatusSpinnerItems;
 
@@ -134,6 +142,49 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
                 timePickerFragment.show(getFragmentManager(), TAG_SHOW_TIME_PICKER);
             }
         });
+        takePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPictureDialog();
+            }
+        });
+    }
+
+    private void showPictureDialog(){
+        AlertDialog.Builder pictureDialog = new AlertDialog.Builder(getActivity());
+        pictureDialog.setTitle("Select Action");
+        String[] pictureDialogItems = {
+                "Select photo from gallery",
+                "Capture photo from camera" };
+        pictureDialog.setItems(pictureDialogItems,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                choosePhotoFromGallary();
+                                break;
+                            case 1:
+                                takePhotoFromCamera();
+                                break;
+                        }
+                    }
+                });
+        pictureDialog.show();
+    }
+
+    public void choosePhotoFromGallary() {
+//        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+//                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//
+//        startActivityForResult(galleryIntent, GALLERY);
+    }
+
+    private void takePhotoFromCamera() {
+        Intent intent = new Intent(ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+        }
     }
 
     @Override
@@ -192,6 +243,8 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
         spinner = view.findViewById(R.id.done_spinner);
         date = view.findViewById(R.id.date_btn);
         time = view.findViewById(R.id.time_btn);
+        takePhoto = view.findViewById(R.id.task_image_btn);
+        setPhoto = view.findViewById(R.id.task_image);
 
         dateFormat = new SimpleDateFormat("EEE, MMM d yyyy");
         timeFormat = new SimpleDateFormat("hh:mm a");
@@ -245,6 +298,11 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
             if (requestCode == GET_TIME_REQUEST_CODE) {
                 timeStr = data.getStringExtra(TimePickerFragment.EXTRA_SEND_TIME);
                 time.setText(timeStr);
+            }
+            if (requestCode == REQUEST_IMAGE_CAPTURE ) {
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                setPhoto.setImageBitmap(imageBitmap);
             }
         }
     }
