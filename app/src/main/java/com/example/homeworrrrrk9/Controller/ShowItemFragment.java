@@ -7,13 +7,16 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,8 +33,11 @@ import com.example.homeworrrrrk9.Model.TaskManager;
 import com.example.homeworrrrrk9.R;
 import com.example.homeworrrrrk9.Repository.TasksRepository;
 import com.example.homeworrrrrk9.State;
+import com.example.homeworrrrrk9.Utils.PictureUtils;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -76,6 +82,7 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
     private String dateStr;
     private String timeStr;
     private State mState;
+    private File photoFile;
 
 
     public ShowItemFragment() {
@@ -183,7 +190,16 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
     private void takePhotoFromCamera() {
         Intent intent = new Intent(ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+            // Create the File where the photo should go
+            photoFile = TasksRepository.getInstance(getContext()).getPhotoFile(mTaskManager);
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(getContext(),
+                        "com.example.homeworrrrrk9",
+                        photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+            }
         }
     }
 
@@ -300,9 +316,10 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
                 time.setText(timeStr);
             }
             if (requestCode == REQUEST_IMAGE_CAPTURE ) {
-                Bundle extras = data.getExtras();
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
-                setPhoto.setImageBitmap(imageBitmap);
+                updatePhotoFormat();
+//                Bundle extras = data.getExtras();
+//                Bitmap imageBitmap = (Bitmap) extras.get("data");
+//                setPhoto.setImageBitmap(imageBitmap);
             }
         }
     }
@@ -349,6 +366,16 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
         mState = State.TODO;
+    }
+
+    private void updatePhotoFormat(){
+        if (photoFile==null | !photoFile.exists()){
+            return;
+        } else {
+            Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getAbsolutePath(), getActivity());
+            setPhoto.setImageBitmap(bitmap);
+            mTaskManager.setPhotoPath(photoFile.getAbsolutePath());
+        }
     }
 
     @Override

@@ -9,6 +9,7 @@ import com.example.homeworrrrrk9.Model.Database.GreenDaoHandler.TaskDaoOpenHelpe
 import com.example.homeworrrrrk9.Model.TaskManager;
 import com.example.homeworrrrrk9.Model.TaskManagerDao;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +60,10 @@ public class TasksRepository {
 
     public static void deleteAll(){
         taaskDao.deleteAll();
+    }
+
+    public File getPhotoFile(TaskManager taskManager){
+        return new File(mContext.getFilesDir(), taskManager.getPhotoName());
     }
 
 }

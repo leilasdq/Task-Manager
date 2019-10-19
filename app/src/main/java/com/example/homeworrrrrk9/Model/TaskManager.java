@@ -193,6 +193,10 @@ public class TaskManager implements Serializable {
         this.mState = mState;
     }
 
+    public String getPhotoName(){
+        return "Img_" + mUUID + ".jpg";
+    }
+
     /** To-one relationship, resolved on first access. */
     @Generated(hash = 59229727)
     public User getMUser() {
