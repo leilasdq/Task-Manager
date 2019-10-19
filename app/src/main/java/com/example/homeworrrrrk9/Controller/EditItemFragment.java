@@ -6,19 +6,25 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -26,14 +32,18 @@ import com.example.homeworrrrrk9.Model.TaskManager;
 import com.example.homeworrrrrk9.R;
 import com.example.homeworrrrrk9.Repository.TasksRepository;
 import com.example.homeworrrrrk9.State;
+import com.example.homeworrrrrk9.Utils.PictureUtils;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static android.provider.MediaStore.ACTION_IMAGE_CAPTURE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,6 +53,7 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
     public static final String TAG_SHOW_TIME_PICKER = "Show time picker";
     public static final int GET_DATE_REQUEST_CODE = 10;
     public static final int GET_TIME_REQUEST_CODE = 11;
+    public static final int REQUEST_IMAGE_CAPTURE = 12;
     public static final String ARGS_TASK_MANAGER_MODEL = "Task manager model";
     public static final String BUNDLE_TITLE_TEXT = "Title text";
     public static final String BUNDLE_DETAIL_TEXT = "Detail text";
@@ -68,6 +79,10 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
     private String timeStr;
     private Date tempDate;
     private State mState;
+    private ImageView setImage;
+    private ImageButton imageBtn;
+    private File photoFile;
+    String path;
 
 
     public EditItemFragment() {
@@ -98,6 +113,8 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
             description.getEditText().setText(taskManager.getDetail());
             stDateAndTimeBtn(taskManager);
             spinner.setPrompt(taskManager.getState().toString());
+            path = taskManager.getPhotoPath();
+            updatePhotoFormat(path);
         }
 
         if (savedInstanceState != null) {
@@ -172,7 +189,6 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
         if (resultCode != Activity.RESULT_OK || data == null)
             return;
 
-
         dateStr = date.getText().toString();
         timeStr = time.getText().toString();
         if (requestCode == GET_DATE_REQUEST_CODE) {
@@ -187,7 +203,9 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
             timeStr = data.getStringExtra(TimePickerFragment.EXTRA_SEND_TIME);
             time.setText(timeStr);
         }
-
+        if (requestCode == REQUEST_IMAGE_CAPTURE ) {
+            updatePhotoFormat();
+        }
     }
 
     @Override
@@ -237,6 +255,8 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
         title = view.findViewById(R.id.title_editText);
         description = view.findViewById(R.id.des_editText);
         spinner = view.findViewById(R.id.done_spinner);
+        setImage = view.findViewById(R.id.task_image);
+        imageBtn = view.findViewById(R.id.task_image_btn);
         date = view.findViewById(R.id.date_btn);
         time = view.findViewById(R.id.time_btn);
         dateFormat = new SimpleDateFormat("EEE, MMM d yyyy");
@@ -270,6 +290,58 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
                 timePickerFragment.show(getFragmentManager(), TAG_SHOW_TIME_PICKER);
             }
         });
+        imageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPictureDialog();
+            }
+        });
+    }
+
+    private void showPictureDialog(){
+        AlertDialog.Builder pictureDialog = new AlertDialog.Builder(getActivity());
+        pictureDialog.setTitle("Select Action");
+        String[] pictureDialogItems = {
+                "Select photo from gallery",
+                "Capture photo from camera" };
+        pictureDialog.setItems(pictureDialogItems,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                choosePhotoFromGallary();
+                                break;
+                            case 1:
+                                takePhotoFromCamera();
+                                break;
+                        }
+                    }
+                });
+        pictureDialog.show();
+    }
+
+    public void choosePhotoFromGallary() {
+//        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+//                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//
+//        startActivityForResult(galleryIntent, GALLERY);
+    }
+
+    private void takePhotoFromCamera() {
+        Intent intent = new Intent(ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            // Create the File where the photo should go
+            photoFile = TasksRepository.getInstance(getContext()).getPhotoFile(taskManager);
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(getContext(),
+                        "com.example.homeworrrrrk9",
+                        photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
     }
 
     private void spinnerSetup() {
@@ -334,5 +406,25 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
         outState.putString(BUNDLE_DATE_BTN_TEXT, date.getText().toString());
         outState.putString(BUNDLE_TIME_BTN_TEXT, time.getText().toString());
         outState.putInt(BUNDLE_SPINNER_POSITION, spinner.getSelectedItemPosition());
+    }
+
+    private void updatePhotoFormat(){
+        if (photoFile==null | !photoFile.exists()){
+            return;
+        } else {
+            Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getAbsolutePath(), getActivity());
+            setImage.setImageBitmap(bitmap);
+            mTaskManager.setPhotoPath(photoFile.getAbsolutePath());
+        }
+    }
+
+    private void updatePhotoFormat(String filePath){
+        if (filePath==null){
+            setImage.setImageResource(android.R.drawable.ic_menu_report_image);
+        } else {
+            Bitmap bitmap = PictureUtils.getScaledBitmap(filePath, getActivity());
+            setImage.setImageBitmap(bitmap);
+//        mTaskManager.setPhotoPath(photoFile.getAbsolutePath());
+        }
     }
 }
