@@ -8,7 +8,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,6 +20,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -33,6 +36,7 @@ import com.example.homeworrrrrk9.R;
 import com.example.homeworrrrrk9.Repository.TasksRepository;
 import com.example.homeworrrrrk9.State;
 import com.example.homeworrrrrk9.Utils.PictureUtils;
+import com.example.homeworrrrrk9.Utils.RealPathUtils;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
@@ -322,31 +326,32 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
             }
             if (requestCode == REQUEST_IMAGE_GET) {
                 Uri fullPhotoUri = data.getData();
-                setPhotoFromGallery(fullPhotoUri);
+                setPhoto.setImageBitmap(BitmapFactory.decodeFile(setPathForGallery(fullPhotoUri)));
+                mTaskManager.setPhotoPath(setPathForGallery(fullPhotoUri));
             }
         }
     }
 
-    private void setPhotoFromGallery(Uri fullPhotoUri) {
-        Bitmap bitmap = null;
-        try {
-            bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), fullPhotoUri);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        setPhoto.setImageBitmap(bitmap);
-        String[] projection = { MediaStore.Images.Media.DATA };
-
-        Cursor cursor = getActivity().getContentResolver().query(fullPhotoUri, projection, null, null, null);
-        cursor.moveToFirst();
-
-//        Log.d(TAG, DatabaseUtils.dumpCursorToString(cursor));
-
-        int columnIndex = cursor.getColumnIndex(projection[0]);
-        String picturePath = cursor.getString(columnIndex); // returns null
-        cursor.close();
-        mTaskManager.setPhotoPath(picturePath);
-    }
+//    private void setPhotoFromGallery(Uri fullPhotoUri) {
+//        Bitmap bitmap = null;
+//        try {
+//            bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), fullPhotoUri);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        setPhoto.setImageBitmap(bitmap);
+//        String[] projection = { MediaStore.Images.Media.DATA };
+//
+//        Cursor cursor = getActivity().getContentResolver().query(fullPhotoUri, projection, null, null, null);
+//        cursor.moveToFirst();
+//
+////        Log.d(TAG, DatabaseUtils.dumpCursorToString(cursor));
+//
+//        int columnIndex = cursor.getColumnIndex(projection[0]);
+//        String picturePath = cursor.getString(columnIndex); // returns null
+//        cursor.close();
+//        mTaskManager.setPhotoPath(picturePath);
+//    }
 
     @Override
     public void onDestroy() {
@@ -400,6 +405,23 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
             setPhoto.setImageBitmap(bitmap);
             mTaskManager.setPhotoPath(photoFile.getAbsolutePath());
         }
+    }
+
+    private String setPathForGallery (Uri uri){
+        String path = null;
+        if (Build.VERSION.SDK_INT < 11)
+            path = RealPathUtils.getRealPathFromURI_BelowAPI11(getContext(), uri);
+
+            // SDK >= 11 && SDK < 19
+        else if (Build.VERSION.SDK_INT < 19)
+            path = RealPathUtils.getRealPathFromURI_API11to18(getContext(), uri);
+
+            // SDK > 19 (Android 4.4)
+        else
+            path = RealPathUtils.getRealPathFromURI_API19(getContext(), uri);
+
+        Log.e(TAG, "setPathForGallery: PATH= " + path );
+        return path;
     }
 
     @Override

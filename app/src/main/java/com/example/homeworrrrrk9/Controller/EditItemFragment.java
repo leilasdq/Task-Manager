@@ -8,7 +8,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -34,6 +36,7 @@ import com.example.homeworrrrrk9.R;
 import com.example.homeworrrrrk9.Repository.TasksRepository;
 import com.example.homeworrrrrk9.State;
 import com.example.homeworrrrrk9.Utils.PictureUtils;
+import com.example.homeworrrrrk9.Utils.RealPathUtils;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
@@ -212,35 +215,26 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
         }
         if (requestCode == REQUEST_IMAGE_GET) {
             Uri fullPhotoUri = data.getData();
-            setPhotoFromGallery(fullPhotoUri);
+            setImage.setImageBitmap(BitmapFactory.decodeFile(setPathForGallery(fullPhotoUri)));
+            mTaskManager.setPhotoPath(setPathForGallery(fullPhotoUri));
         }
     }
 
-    private void setPhotoFromGallery(Uri fullPhotoUri) {
-        Bitmap bitmap = null;
-        try {
-            bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), fullPhotoUri);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        setImage.setImageBitmap(bitmap);
-        mTaskManager.setPhotoPath(getRealPathFromURI(fullPhotoUri));
-        Log.e(TAG, "setPhotoFromGallery: "+  getRealPathFromURI(fullPhotoUri));
-    }
+    private String setPathForGallery (Uri uri){
+        String path = null;
+        if (Build.VERSION.SDK_INT < 11)
+            path = RealPathUtils.getRealPathFromURI_BelowAPI11(getContext(), uri);
 
-    public String getRealPathFromURI(Uri contentUri) {
+            // SDK >= 11 && SDK < 19
+        else if (Build.VERSION.SDK_INT < 19)
+            path = RealPathUtils.getRealPathFromURI_API11to18(getContext(), uri);
 
-        // can post image
-        String[] proj = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getActivity().getContentResolver().query(contentUri,
-                proj, // Which columns to return
-                null,       // WHERE clause; which rows to return (all rows)
-                null,       // WHERE clause selection arguments (none)
-                null); // Order-by clause (ascending by name)
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
+            // SDK > 19 (Android 4.4)
+        else
+            path = RealPathUtils.getRealPathFromURI_API19(getContext(), uri);
 
-        return cursor.getString(column_index);
+        Log.e(TAG, "setPathForGallery: PATH= " + path );
+        return path;
     }
 
     @Override
