@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,13 +18,11 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -44,7 +43,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import static android.provider.MediaStore.ACTION_IMAGE_CAPTURE;
 
@@ -57,6 +55,7 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
     public static final int GET_DATE_REQUEST_CODE = 2;
     public static final int GET_TIME_REQUEST_CODE = 3;
     public static final int REQUEST_IMAGE_CAPTURE = 4;
+    public static final int REQUEST_IMAGE_GET = 5;
     public static final String EXTRA_FORCE_NOTIFY = "Force notify";
     public static final String BUNDLE_TITLE_TEXT = "Title text";
     public static final String BUNDLE_DETAIL_TEXT = "Detail text";
@@ -169,7 +168,7 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0:
-                                choosePhotoFromGallary();
+                                choosePhotoFromGallery();
                                 break;
                             case 1:
                                 takePhotoFromCamera();
@@ -180,11 +179,13 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
         pictureDialog.show();
     }
 
-    public void choosePhotoFromGallary() {
-//        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-//                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//
-//        startActivityForResult(galleryIntent, GALLERY);
+    public void choosePhotoFromGallery() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            intent = Intent.createChooser(intent, "Choose your app to take a picture");
+            startActivityForResult(intent, REQUEST_IMAGE_GET);
+        }
     }
 
     private void takePhotoFromCamera() {
@@ -198,6 +199,7 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
                         "com.example.homeworrrrrk9",
                         photoFile);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                intent = Intent.createChooser(intent, "Choose your app to capture a photo");
                 startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
             }
         }
@@ -317,11 +319,33 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
             }
             if (requestCode == REQUEST_IMAGE_CAPTURE ) {
                 updatePhotoFormat();
-//                Bundle extras = data.getExtras();
-//                Bitmap imageBitmap = (Bitmap) extras.get("data");
-//                setPhoto.setImageBitmap(imageBitmap);
+            }
+            if (requestCode == REQUEST_IMAGE_GET) {
+                Uri fullPhotoUri = data.getData();
+                setPhotoFromGallery(fullPhotoUri);
             }
         }
+    }
+
+    private void setPhotoFromGallery(Uri fullPhotoUri) {
+        Bitmap bitmap = null;
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), fullPhotoUri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        setPhoto.setImageBitmap(bitmap);
+        String[] projection = { MediaStore.Images.Media.DATA };
+
+        Cursor cursor = getActivity().getContentResolver().query(fullPhotoUri, projection, null, null, null);
+        cursor.moveToFirst();
+
+//        Log.d(TAG, DatabaseUtils.dumpCursorToString(cursor));
+
+        int columnIndex = cursor.getColumnIndex(projection[0]);
+        String picturePath = cursor.getString(columnIndex); // returns null
+        cursor.close();
+        mTaskManager.setPhotoPath(picturePath);
     }
 
     @Override

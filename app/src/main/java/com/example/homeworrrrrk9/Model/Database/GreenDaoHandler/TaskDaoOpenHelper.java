@@ -30,4 +30,9 @@ public class TaskDaoOpenHelper extends DaoMaster.OpenHelper {
 
         userDao.insert(user);
     }
+
+    @Override
+    public void onUpgrade(Database db, int oldVersion, int newVersion) {
+        super.onUpgrade(db, oldVersion, newVersion);
+    }
 }

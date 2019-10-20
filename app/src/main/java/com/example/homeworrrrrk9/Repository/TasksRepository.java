@@ -2,6 +2,7 @@ package com.example.homeworrrrrk9.Repository;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.provider.SyncStateContract;
 
 import com.example.homeworrrrrk9.Model.DaoMaster;
 import com.example.homeworrrrrk9.Model.DaoSession;
@@ -16,7 +17,7 @@ import java.util.List;
 public class TasksRepository {
     private static TasksRepository ourInstance;
     private static Context mContext;
-    private static TaskManagerDao taaskDao;
+    private static TaskManagerDao taskDao;
 
     public static TasksRepository getInstance(Context context) {
         if (ourInstance == null) {
@@ -30,36 +31,38 @@ public class TasksRepository {
 
         SQLiteDatabase database =new TaskDaoOpenHelper(mContext).getWritableDatabase();
         DaoMaster daoMaster = new DaoMaster(database);
+        DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(mContext, TaskDaoOpenHelper.NAME, null);
+        devOpenHelper.onUpgrade(database, 1, 2);
         DaoSession daoSession = daoMaster.newSession();
-        taaskDao = daoSession.getTaskManagerDao();
+        taskDao = daoSession.getTaskManagerDao();
     }
 
     public List<TaskManager> getRepositoryList(long id) {
         List<TaskManager> taskManagers = new ArrayList<>();
 
         if (id == 1){
-            taskManagers = taaskDao.loadAll();
+            taskManagers = taskDao.queryBuilder().list();
         } else {
-            taskManagers = taaskDao.queryBuilder().where(TaskManagerDao.Properties.UserId.eq(id)).list();
+            taskManagers = taskDao.queryBuilder().where(TaskManagerDao.Properties.UserId.eq(id)).list();
         }
 
         return taskManagers;
     }
 
     public static void addTodoItem (TaskManager taskManager) {
-        taaskDao.insert(taskManager);
+        taskDao.insert(taskManager);
     }
 
     public static void editItem(TaskManager taskManager){
-        taaskDao.update(taskManager);
+        taskDao.update(taskManager);
     }
 
     public static void deleteItem (TaskManager taskManager){
-        taaskDao.delete(taskManager);
+        taskDao.delete(taskManager);
     }
 
     public static void deleteAll(){
-        taaskDao.deleteAll();
+        taskDao.deleteAll();
     }
 
     public File getPhotoFile(TaskManager taskManager){

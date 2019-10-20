@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,6 +37,8 @@ import com.example.homeworrrrrk9.Utils.PictureUtils;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,6 +57,7 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
     public static final int GET_DATE_REQUEST_CODE = 10;
     public static final int GET_TIME_REQUEST_CODE = 11;
     public static final int REQUEST_IMAGE_CAPTURE = 12;
+    public static final int REQUEST_IMAGE_GET = 5;
     public static final String ARGS_TASK_MANAGER_MODEL = "Task manager model";
     public static final String BUNDLE_TITLE_TEXT = "Title text";
     public static final String BUNDLE_DETAIL_TEXT = "Detail text";
@@ -206,6 +210,37 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
         if (requestCode == REQUEST_IMAGE_CAPTURE ) {
             updatePhotoFormat();
         }
+        if (requestCode == REQUEST_IMAGE_GET) {
+            Uri fullPhotoUri = data.getData();
+            setPhotoFromGallery(fullPhotoUri);
+        }
+    }
+
+    private void setPhotoFromGallery(Uri fullPhotoUri) {
+        Bitmap bitmap = null;
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), fullPhotoUri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        setImage.setImageBitmap(bitmap);
+        mTaskManager.setPhotoPath(getRealPathFromURI(fullPhotoUri));
+        Log.e(TAG, "setPhotoFromGallery: "+  getRealPathFromURI(fullPhotoUri));
+    }
+
+    public String getRealPathFromURI(Uri contentUri) {
+
+        // can post image
+        String[] proj = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getActivity().getContentResolver().query(contentUri,
+                proj, // Which columns to return
+                null,       // WHERE clause; which rows to return (all rows)
+                null,       // WHERE clause selection arguments (none)
+                null); // Order-by clause (ascending by name)
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+
+        return cursor.getString(column_index);
     }
 
     @Override
@@ -310,7 +345,7 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0:
-                                choosePhotoFromGallary();
+                                choosePhotoFromGallery();
                                 break;
                             case 1:
                                 takePhotoFromCamera();
@@ -321,11 +356,13 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
         pictureDialog.show();
     }
 
-    public void choosePhotoFromGallary() {
-//        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-//                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//
-//        startActivityForResult(galleryIntent, GALLERY);
+    public void choosePhotoFromGallery() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            intent = Intent.createChooser(intent, "Choose your app to take a picture");
+            startActivityForResult(intent, REQUEST_IMAGE_GET);
+        }
     }
 
     private void takePhotoFromCamera() {
