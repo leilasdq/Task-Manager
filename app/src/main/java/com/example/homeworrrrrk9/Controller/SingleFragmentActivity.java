@@ -10,19 +10,17 @@ import com.example.homeworrrrrk9.R;
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
 
-    public static final String TAG_LOGIN_AND_SIGN_UP_FRAGMENTS = "login and signUp fragments";
-
     public abstract Fragment createFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_show_fragments);
 
         if (savedInstanceState==null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, createFragment(), TAG_LOGIN_AND_SIGN_UP_FRAGMENTS)
+                    .replace(R.id.container, createFragment())
                     .commit();
         }
     }

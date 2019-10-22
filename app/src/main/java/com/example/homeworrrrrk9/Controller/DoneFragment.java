@@ -257,11 +257,18 @@ public class DoneFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.action_bar_item_menu, menu);
+        if (userId == 1) {
+            menu.findItem(R.id.user_control).setVisible(true);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
+            case R.id.user_control:
+                Intent intent = UserControlActivity.newIntent(getActivity());
+                startActivity(intent);
+                return  true;
             case R.id.search:
                 SearchView searchView = (SearchView) item.getActionView();
                 searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);

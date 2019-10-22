@@ -3,9 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/user_control"
+        android:title="user control"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_control_account_black_24dp"
+        android:visible="false"/>
+
+
+    <item
         android:id="@+id/delete_all"
         android:title="delete all items"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:icon="@drawable/ic_delete_all"/>
 
     <item
@@ -30,7 +38,7 @@
         android:icon="@drawable/ic_search"
         android:title="Search"
         android:visible="true"
-        app:showAsAction="ifRoom|collapseActionView"
+        app:showAsAction="always|collapseActionView"
         app:actionViewClass="android.widget.SearchView"/>
 
 </menu>
