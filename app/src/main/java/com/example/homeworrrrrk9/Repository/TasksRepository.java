@@ -31,10 +31,10 @@ public class TasksRepository {
 
         SQLiteDatabase database =new TaskDaoOpenHelper(mContext).getWritableDatabase();
         DaoMaster daoMaster = new DaoMaster(database);
-        if (DaoMaster.SCHEMA_VERSION == 1) {
-            DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(mContext, TaskDaoOpenHelper.NAME, null);
-            devOpenHelper.onUpgrade(database, 1, 2);
-        }
+//        if (DaoMaster.SCHEMA_VERSION == 1) {
+//            DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(mContext, TaskDaoOpenHelper.NAME, null);
+//            devOpenHelper.onUpgrade(database, 1, 2);
+//        }
         DaoSession daoSession = daoMaster.newSession();
         taskDao = daoSession.getTaskManagerDao();
     }

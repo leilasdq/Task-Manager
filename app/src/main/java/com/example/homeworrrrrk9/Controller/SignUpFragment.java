@@ -22,6 +22,7 @@ import com.example.homeworrrrrk9.Repository.UserRepository;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -115,6 +116,7 @@ public class SignUpFragment extends Fragment {
                     User user = new User();
                     user.setUsername(mUserInput.getEditText().getText().toString());
                     user.setPassword(mPasswordInput.getEditText().getText().toString());
+                    user.setSignupDate(Calendar.getInstance().getTime());
                     UserRepository.addUsers(user);
                     sendResult();
                 }
@@ -145,7 +147,7 @@ public class SignUpFragment extends Fragment {
 
     private void sendResult() {
         if (!userValidate() | !passwordValidate()) {
-            Snackbar.make(getView(), "Fill the realignments..", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(getView(), "Fill the requirements..", Snackbar.LENGTH_LONG).show();
         } else {
             userName = mUserInput.getEditText().getText().toString();
             password = mPasswordInput.getEditText().getText().toString();

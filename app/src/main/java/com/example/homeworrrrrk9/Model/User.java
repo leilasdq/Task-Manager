@@ -10,6 +10,7 @@ import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.Property;
 
 import java.util.UUID;
+import java.util.Date;
 import org.greenrobot.greendao.annotation.Generated;
 
 @Entity
@@ -31,6 +32,9 @@ public class User {
     @NotNull
     private String password;
 
+    @Property (nameInDb = "signup_date")
+    private Date signupDate;
+
     public User() {
         id = UUID.randomUUID();
     }
@@ -39,13 +43,14 @@ public class User {
         this.id = id;
     }
 
-    @Generated(hash = 1866137501)
+    @Generated(hash = 333422426)
     public User(UUID id, Long _userId, @NotNull String username,
-            @NotNull String password) {
+            @NotNull String password, Date signupDate) {
         this.id = id;
         this._userId = _userId;
         this.username = username;
         this.password = password;
+        this.signupDate = signupDate;
     }
 
     public UUID getId() {
@@ -78,5 +83,13 @@ public class User {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public Date getSignupDate() {
+        return this.signupDate;
+    }
+
+    public void setSignupDate(Date signupDate) {
+        this.signupDate = signupDate;
     }
 }

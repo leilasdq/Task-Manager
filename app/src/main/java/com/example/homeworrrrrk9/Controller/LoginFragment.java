@@ -110,7 +110,6 @@ public class LoginFragment extends Fragment {
     public void onResume() {
         super.onResume();
         mUsers = UserRepository.getInstance(getContext()).getRepositoryList();
-        validateUSerLogin(mUserInput.getEditText().getText().toString());
     }
 
     @Override
@@ -149,16 +148,17 @@ public class LoginFragment extends Fragment {
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                validateUSerLogin(mUserInput.getEditText().getText().toString());
                 if (!userValidate() | !passwordValidate()) {
                     Snackbar.make(getView(), "Fill the realignments..", Snackbar.LENGTH_LONG).show();
                 }
-                else if (mUserInput.getEditText().getText().toString().equals(getUserName)
-                && mPasswordInput.getEditText().getText().toString().equals(getPassword)){
-                    Snackbar.make(getView(), "You are logged in", Snackbar.LENGTH_LONG).show();
-
-                    Intent intent = ListsActivity.newIntent(getActivity(), getUserName, getPassword, userId);
-                    startActivity(intent);
-                }
+//                else if (mUserInput.getEditText().getText().toString().equals(getUserName)
+//                && mPasswordInput.getEditText().getText().toString().equals(getPassword)){
+//                    Snackbar.make(getView(), "You are logged in", Snackbar.LENGTH_LONG).show();
+//
+//                    Intent intent = ListsActivity.newIntent(getActivity(), getUserName, getPassword, userId);
+//                    startActivity(intent);
+//                }
                 else if (validateUSerLogin(mUserInput.getEditText().getText().toString())
                 && validatePasswordLogin(mPasswordInput.getEditText().getText().toString())){
                     Snackbar.make(getView(), "You are logged in", Snackbar.LENGTH_LONG).show();
@@ -222,9 +222,11 @@ public class LoginFragment extends Fragment {
     }
 
     private boolean validateUSerLogin(String userText){
+        mUsers = UserRepository.getInstance(getContext()).getRepositoryList();
         for (int i = 0; i < mUsers.size() ; i++) {
             if (mUsers.get(i).getUsername().equalsIgnoreCase(userText)){
                 userId = mUsers.get(i).get_userId();
+                Log.e(TAG, "validateUSerLogin: " + userId );
                 return true;
             }
         }

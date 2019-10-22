@@ -31,8 +31,14 @@ public class TaskDaoOpenHelper extends DaoMaster.OpenHelper {
         userDao.insert(user);
     }
 
-    @Override
-    public void onUpgrade(Database db, int oldVersion, int newVersion) {
-        super.onUpgrade(db, oldVersion, newVersion);
-    }
+//    @Override
+//    public void onUpgrade(Database db, int oldVersion, int newVersion) {
+//        super.onUpgrade(db, oldVersion, newVersion);
+//
+//        if (oldVersion==1 & newVersion==2) {
+//            db.execSQL("ALTER TABLE 'Task' ADD 'photo_path' TEXT");
+//        } else {
+//            db.execSQL("ALTER TABLE 'USER' ADD 'signup_date' Date");
+//        }
+//    }
 }
