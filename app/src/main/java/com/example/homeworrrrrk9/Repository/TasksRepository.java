@@ -63,6 +63,15 @@ public class TasksRepository {
         taskDao.delete(taskManager);
     }
 
+    public void cascadeDelete(Long id){
+        List<TaskManager> taskManagerList =  getRepositoryList(1);
+        for (int i = 0; i < taskManagerList.size() ; i++) {
+            if (taskManagerList.get(i).getUserId().equals(id)){
+                taskDao.delete(taskManagerList.get(i));
+            }
+        }
+    }
+
     public static void deleteAll(){
         taskDao.deleteAll();
     }

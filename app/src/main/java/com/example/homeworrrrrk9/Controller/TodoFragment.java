@@ -62,9 +62,9 @@ public class TodoFragment extends Fragment {
 
 
     public static TodoFragment newInstance() {
-        
+
         Bundle args = new Bundle();
-        
+
         TodoFragment fragment = new TodoFragment();
         fragment.setArguments(args);
         return fragment;

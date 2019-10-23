@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.circularreveal.cardview.CircularRevealCardView
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:elevation="20dp"
+        app:cardCornerRadius="5dp"
+        android:layout_margin="4dp"
+        style="@style/CardView.Light"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:orientation="horizontal"
+            android:background="#F7F6F6"
+            android:divider="?android:dividerVertical"
+            android:showDividers="middle">
+
+            <TextView
+                android:id="@+id/controller_user_name"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="#302E2E"
+                tools:text="User Name"
+                android:textSize="18sp"
+                android:gravity="center"/>
+
+            <TextView
+                android:id="@+id/controller_date"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="#302E2E"
+                tools:text="Date"
+                android:textSize="18sp"
+                android:textStyle="italic"
+                android:gravity="center"/>
+
+            <ImageButton
+                android:id="@+id/controller_action"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_delete_forever_black_24dp"/>
+
+        </LinearLayout>
+
+    </com.google.android.material.circularreveal.cardview.CircularRevealCardView>
+
+</LinearLayout>

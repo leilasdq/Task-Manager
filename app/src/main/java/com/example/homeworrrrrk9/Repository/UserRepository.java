@@ -43,6 +43,12 @@ public class UserRepository {
         return users;
     }
 
+    public List<User> adminUsersList(){
+        users = new ArrayList<>() ;
+        users = userDao.queryBuilder().where(UserDao.Properties._userId.gt(1)).list();
+        return users;
+    }
+
     public static void addUsers (User user) {
         userDao.insert(user);
     }

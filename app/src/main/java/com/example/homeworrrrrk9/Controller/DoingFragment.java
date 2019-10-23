@@ -57,9 +57,9 @@ public class DoingFragment extends Fragment {
     private long userId;
 
     public static DoingFragment newInstance() {
-        
+
         Bundle args = new Bundle();
-        
+
         DoingFragment fragment = new DoingFragment();
         fragment.setArguments(args);
         return fragment;
