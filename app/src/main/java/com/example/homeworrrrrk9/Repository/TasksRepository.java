@@ -76,6 +76,11 @@ public class TasksRepository {
         taskDao.deleteAll();
     }
 
+    public int getTasksCount(Long id){
+        List<TaskManager> taskManagerList =  getRepositoryList(id);
+        return taskManagerList.size();
+    }
+
     public File getPhotoFile(TaskManager taskManager){
         return new File(mContext.getFilesDir(), taskManager.getPhotoName());
     }

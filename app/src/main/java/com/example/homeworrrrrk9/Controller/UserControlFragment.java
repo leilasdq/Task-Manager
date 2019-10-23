@@ -40,7 +40,7 @@ public class UserControlFragment extends Fragment {
     private List<User> mUsers;
 
     private RecyclerView mRecyclerView;
-    private TextView userName, date;
+    private TextView userName, date, count;
     private ImageButton action;
     AlertDialog delete;
 
@@ -86,16 +86,19 @@ public class UserControlFragment extends Fragment {
 
             userName = itemView.findViewById(R.id.controller_user_name);
             date = itemView.findViewById(R.id.controller_date);
+            count = itemView.findViewById(R.id.controller_count);
             action = itemView.findViewById(R.id.controller_action);
         }
 
         private void bind(final User user) {
             mUser = user;
+            int taskCount = TasksRepository.getInstance(getContext()).getTasksCount(user.get_userId());
 
             DateFormat formatDate = new SimpleDateFormat("EEE, MMM d yyyy");
             Log.e("User Control", "bind: " + user.getSignupDate());
 
             userName.setText(user.getUsername());
+            count.setText(String.valueOf(taskCount));
             date.setText(formatDate.format(user.getSignupDate()));
 
             action.setOnClickListener(new View.OnClickListener() {
@@ -120,35 +123,17 @@ public class UserControlFragment extends Fragment {
                                 }
                             })
                             .show();
-
-//                    dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-//                        @Override
-//                        public void onShow(DialogInterface dialogInterface) {
-//
-//                            Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-//                            button.setOnClickListener(new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View view) {
-//                                    UserRepository.deleteUser(user);
-//                                    dialog.dismiss();
-//                                }
-//                            });
-//                            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-//                                @Override
-//                                public void onDismiss(DialogInterface dialogInterface) {
-//                                    adapterSet();
-//                                }
-//                            });
-////                            dialog.show();
-//                        }
-//                    });
                 }
             });
         }
     }
 
     private class UserAdapter extends RecyclerView.Adapter<UserHolder> {
-        List<User> mUserList;
+        public void setUserList(List<User> userList) {
+            mUserList = userList;
+        }
+
+        private List<User> mUserList;
 
         public UserAdapter(List<User> userList) {
             mUserList = userList;
@@ -177,6 +162,7 @@ public class UserControlFragment extends Fragment {
         if (mAdapter == null){
             mAdapter = new UserAdapter(mUsers);
         } else {
+            mAdapter.setUserList(mUsers);
             mAdapter.notifyDataSetChanged();
         }
     }

@@ -44,6 +44,17 @@
                 android:textStyle="italic"
                 android:gravity="center"/>
 
+            <TextView
+                android:id="@+id/controller_count"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="#302E2E"
+                tools:text="3"
+                android:textSize="18sp"
+                android:textStyle="italic"
+                android:gravity="center"/>
+
             <ImageButton
                 android:id="@+id/controller_action"
                 android:layout_width="0dp"
