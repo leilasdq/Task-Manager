@@ -356,7 +356,7 @@ public class ShowItemFragment extends DialogFragment implements AdapterView.OnIt
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getActivity().recreate();
+//        getActivity().recreate();
 //        Intent intent = new Intent(getContext(), ListsActivity.class);
 //        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //        startActivity(intent);

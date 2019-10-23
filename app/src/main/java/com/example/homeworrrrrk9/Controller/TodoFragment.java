@@ -103,6 +103,7 @@ public class TodoFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+//        setupList();
         updateAdapter();
     }
 
@@ -113,7 +114,11 @@ public class TodoFragment extends Fragment {
 
         mRecyclerView = view.findViewById(R.id.todo_recycler);
         todoFab = view.findViewById(R.id.todo_fab);
-//        models = new ArrayList<>();
+//        setupList();
+    }
+
+    private void setupList() {
+        models = new ArrayList<>();
         models = TasksRepository.getInstance(getContext()).getRepositoryList(userId);
         todoModels = new ArrayList<>();
         if (models.size()>0){
@@ -153,7 +158,7 @@ public class TodoFragment extends Fragment {
                 public void onClick(View view) {
                     EditItemFragment edit = EditItemFragment.newInstance(mTaskManager);
                     edit.show(getFragmentManager(), TAG_CHANGE_ITEM);
-                    Toast.makeText(getActivity(), "On Item Clicked", Toast.LENGTH_SHORT).show();
+                    edit.setTargetFragment(TodoFragment.this, SHOW_ITEM_FROM_TODO_REQUEST_CODE);
                 }
             });
         }
@@ -191,9 +196,6 @@ public class TodoFragment extends Fragment {
     }
 
     private class TodoAdapter extends RecyclerView.Adapter<TodoViewHolder> implements Filterable {
-//        public void setList(List<TaskManager> list) {
-//            mList = list;
-//        }
 
         private List<TaskManager> mList;
         private List<TaskManager> fullList;
@@ -201,6 +203,10 @@ public class TodoFragment extends Fragment {
         public TodoAdapter(List<TaskManager> taskManagers) {
             mList = taskManagers;
             fullList = new ArrayList<>(taskManagers);
+        }
+
+        public void setList(List<TaskManager> list) {
+            mList = list;
         }
 
         @NonNull
@@ -258,25 +264,13 @@ public class TodoFragment extends Fragment {
     }
 
     private void updateAdapter(){
+        setupList();
         if (adapter==null){
             adapter = new TodoAdapter(todoModels);
             mRecyclerView.setAdapter(adapter);
         } else {
+            adapter.setList(todoModels);
             adapter.notifyDataSetChanged();
-        }
-    }
-
-    public void notifyAdapter(){
-        if (adapter!=null){
-            Log.e(TAG, "notifyAdapter: GRRRRR");
-            models = TasksRepository.getInstance(getActivity()).getRepositoryList(userId);
-            if (models.size()>0){
-                for (int i = 0; i < models.size() ; i++) {
-                    if (models.get(i).getState()== State.TODO) todoModels.add(models.get(i));
-                }
-            }
-            adapter.notifyDataSetChanged();
-            //adapter.notifyItemInserted(todoModels.size());
         }
     }
 
@@ -291,7 +285,7 @@ public class TodoFragment extends Fragment {
             boolean isTrue = data.getBooleanExtra(ShowItemFragment.EXTRA_FORCE_NOTIFY, true);
             Log.e(TAG, "onActivityResult: " + isTrue  );
             if (isTrue) {
-                notifyAdapter();
+                updateAdapter();
             }
         }
     }
@@ -345,7 +339,7 @@ public class TodoFragment extends Fragment {
 
                     @Override
                     public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                        notifyAdapter();
+                        updateAdapter();
                         return true;
                     }
                 });

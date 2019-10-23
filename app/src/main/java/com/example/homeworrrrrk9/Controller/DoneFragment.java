@@ -1,12 +1,14 @@
 package com.example.homeworrrrrk9.Controller;
 
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -78,6 +80,7 @@ public class DoneFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_done, container, false);
 
         initUi(view);
+        updateAdapter();
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         setHasOptionsMenu(true);
@@ -101,9 +104,7 @@ public class DoneFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (adapter!=null){
-            adapter.notifyDataSetChanged();
-        }
+        updateAdapter();
     }
 
     private void initUi(View view) {
@@ -114,17 +115,6 @@ public class DoneFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.done_recycler);
         models = TasksRepository.getInstance(getContext()).getRepositoryList(userId);
         doneFab = view.findViewById(R.id.done_fab);
-        doneModels = new ArrayList<>();
-        if (models.size()>0){
-            for (int i = 0; i < models.size() ; i++) {
-                if (models.get(i).getState()== State.DONE) doneModels.add(models.get(i));
-            }
-        }
-        if (doneModels.size()==0){
-            mRecyclerView.setVisibility(View.GONE);
-        } else {
-            mRecyclerView.setVisibility(View.VISIBLE);
-        }
     }
 
     private class DoneViewHolder extends RecyclerView.ViewHolder {
@@ -152,7 +142,7 @@ public class DoneFragment extends Fragment {
                 public void onClick(View view) {
                     EditItemFragment edit = EditItemFragment.newInstance(mTaskManager);
                     edit.show(getFragmentManager(), TAG_CHANGE_ITEM);
-                    Toast.makeText(getActivity(), "On Item Clicked", Toast.LENGTH_SHORT).show();
+                    edit.setTargetFragment(DoneFragment.this, SHOW_ITEM_FROM_TODO_REQUEST_CODE);
                 }
             });
         }
@@ -190,7 +180,11 @@ public class DoneFragment extends Fragment {
     }
 
     private class DoneAdapter extends RecyclerView.Adapter<DoneViewHolder> implements Filterable {
-        List<TaskManager> mList;
+        public void setList(List<TaskManager> list) {
+            mList = list;
+        }
+
+        private List<TaskManager> mList;
         private List<TaskManager> fullList;
 
         public DoneAdapter(List<TaskManager> taskManagers) {
@@ -302,7 +296,7 @@ public class DoneFragment extends Fragment {
 
                     @Override
                     public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                        notifyAdapter();
+                        updateAdapter();
                         return true;
                     }
                 });
@@ -344,16 +338,46 @@ public class DoneFragment extends Fragment {
         }
     }
 
-    public void notifyAdapter(){
-        if (adapter!=null){
-            models = TasksRepository.getInstance(getActivity()).getRepositoryList(userId);
-            if (models.size()>0){
-                for (int i = 0; i < models.size() ; i++) {
-                    if (models.get(i).getState()== State.TODO) doneModels.add(models.get(i));
-                }
-            }
+    private void updateAdapter(){
+        setupList();
+        if (adapter==null){
+            adapter = new DoneAdapter(doneModels);
+            mRecyclerView.setAdapter(adapter);
+        } else {
+            adapter.setList(doneModels);
             adapter.notifyDataSetChanged();
-            //adapter.notifyItemInserted(todoModels.size());
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != Activity.RESULT_OK | data==null){
+            return;
+        }
+        if (requestCode == SHOW_ITEM_FROM_TODO_REQUEST_CODE){
+            boolean isTrue = data.getBooleanExtra(ShowItemFragment.EXTRA_FORCE_NOTIFY, true);
+//            Log.e(TAG, "onActivityResult: " + isTrue  );
+            if (isTrue) {
+                updateAdapter();
+            }
+        }
+    }
+
+    private void setupList() {
+        models = new ArrayList<>();
+        models = TasksRepository.getInstance(getContext()).getRepositoryList(userId);
+        doneModels = new ArrayList<>();
+        if (models.size()>0){
+            for (int i = 0; i < models.size() ; i++) {
+                if (models.get(i).getState()== State.DONE) doneModels.add(models.get(i));
+            }
+        }
+        if (doneModels.size()==0){
+            mRecyclerView.setVisibility(View.GONE);
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
         }
     }
 

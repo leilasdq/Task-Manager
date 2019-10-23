@@ -57,6 +57,7 @@ import static android.provider.MediaStore.ACTION_IMAGE_CAPTURE;
 public class EditItemFragment extends DialogFragment implements AdapterView.OnItemSelectedListener {
     public static final String TAG_SHOW_DATE_PICKER = "Show date Picker";
     public static final String TAG_SHOW_TIME_PICKER = "Show time picker";
+    public static final String EXTRA_FORCE_NOTIFY = "Force notify";
     public static final int GET_DATE_REQUEST_CODE = 10;
     public static final int GET_TIME_REQUEST_CODE = 11;
     public static final int REQUEST_IMAGE_CAPTURE = 12;
@@ -174,6 +175,10 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
                     if (wantToCloseDialog) {
                         setDate();
                         TasksRepository.editItem(mTaskManager);
+                        Intent intent = new Intent();
+                        intent.putExtra(EXTRA_FORCE_NOTIFY, true);
+                        Fragment fragment = getTargetFragment();
+                        fragment.onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
                         d.dismiss();
                     }
                 }
@@ -240,7 +245,7 @@ public class EditItemFragment extends DialogFragment implements AdapterView.OnIt
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getActivity().recreate();
+//        getActivity().recreate();
     }
 
     private void setDate() {

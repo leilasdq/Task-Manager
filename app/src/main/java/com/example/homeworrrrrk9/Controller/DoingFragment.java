@@ -1,12 +1,14 @@
 package com.example.homeworrrrrk9.Controller;
 
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -78,6 +80,7 @@ public class DoingFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_doing, container, false);
 
         initUi(view);
+        updateAdapter();
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         setHasOptionsMenu(true);
@@ -99,11 +102,25 @@ public class DoingFragment extends Fragment {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != Activity.RESULT_OK | data==null){
+            return;
+        }
+        if (requestCode == SHOW_ITEM_FROM_TODO_REQUEST_CODE){
+            boolean isTrue = data.getBooleanExtra(ShowItemFragment.EXTRA_FORCE_NOTIFY, true);
+//            Log.e(TAG, "onActivityResult: " + isTrue  );
+            if (isTrue) {
+                updateAdapter();
+            }
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        if (adapter!=null){
-            adapter.notifyDataSetChanged();
-        }
+        updateAdapter();
     }
 
     private void initUi(View view) {
@@ -114,17 +131,6 @@ public class DoingFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.doing_recycler);
         models = TasksRepository.getInstance(getContext()).getRepositoryList(userId);
         doingFab = view.findViewById(R.id.doing_fab);
-        doingModels = new ArrayList<>();
-        if (models.size()>0){
-            for (int i = 0; i < models.size() ; i++) {
-                if (models.get(i).getState()== State.DOING) doingModels.add(models.get(i));
-            }
-        }
-        if (doingModels.size()==0){
-            mRecyclerView.setVisibility(View.GONE);
-        } else {
-            mRecyclerView.setVisibility(View.VISIBLE);
-        }
     }
 
     private class DoingViewHolder extends RecyclerView.ViewHolder {
@@ -152,7 +158,7 @@ public class DoingFragment extends Fragment {
                 public void onClick(View view) {
                     EditItemFragment edit = EditItemFragment.newInstance(mTaskManager);
                     edit.show(getFragmentManager(), TAG_CHANGE_ITEM);
-                    Toast.makeText(getActivity(), "On Item Clicked", Toast.LENGTH_SHORT).show();
+                    edit.setTargetFragment(DoingFragment.this, SHOW_ITEM_FROM_TODO_REQUEST_CODE);
                 }
             });
         }
@@ -190,13 +196,20 @@ public class DoingFragment extends Fragment {
     }
 
     private class DoingAdapter extends RecyclerView.Adapter<DoingViewHolder> implements Filterable {
-        List<TaskManager> mList;
+
+        public void setList(List<TaskManager> list) {
+            mList = list;
+        }
+
+        private List<TaskManager> mList;
         private List<TaskManager> fullList;
 
         public DoingAdapter(List<TaskManager> taskManagers) {
             mList = taskManagers;
             fullList = new ArrayList<>(taskManagers);
         }
+
+
 
         @NonNull
         @Override
@@ -303,7 +316,7 @@ public class DoingFragment extends Fragment {
 
                     @Override
                     public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                        notifyAdapter();
+                        updateAdapter();
                         return true;
                     }
                 });
@@ -345,17 +358,33 @@ public class DoingFragment extends Fragment {
         }
     }
 
-    public void notifyAdapter(){
-        if (adapter!=null){
-            models = TasksRepository.getInstance(getActivity()).getRepositoryList(userId);
-            if (models.size()>0){
-                for (int i = 0; i < models.size() ; i++) {
-                    if (models.get(i).getState()== State.DOING) doingModels.add(models.get(i));
-                }
-            }
+    private void updateAdapter(){
+        setupList();
+        if (adapter==null){
+            adapter = new DoingAdapter(doingModels);
+            mRecyclerView.setAdapter(adapter);
+        } else {
+            adapter.setList(doingModels);
             adapter.notifyDataSetChanged();
-            //adapter.notifyItemInserted(todoModels.size());
         }
     }
+
+    private void setupList() {
+        models = new ArrayList<>();
+        models = TasksRepository.getInstance(getContext()).getRepositoryList(userId);
+        doingModels = new ArrayList<>();
+        if (models.size()>0){
+            for (int i = 0; i < models.size() ; i++) {
+                if (models.get(i).getState()== State.DOING) doingModels.add(models.get(i));
+            }
+        }
+        if (doingModels.size()==0){
+            mRecyclerView.setVisibility(View.GONE);
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
+
 
 }
