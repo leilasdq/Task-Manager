@@ -57,6 +57,7 @@ public class DoneFragment extends Fragment {
 
     private String user, pass;
     private long userId;
+    private AlertDialog delete;
 
     public static DoneFragment newInstance() {
         
@@ -316,21 +317,31 @@ public class DoneFragment extends Fragment {
                 return true;
             case R.id.delete_all:
                 final List<TaskManager> models = TasksRepository.getInstance(getActivity()).getRepositoryList(userId);
-                AlertDialog delete = new AlertDialog.Builder(getActivity())
+                delete = new AlertDialog.Builder(getActivity())
                         .setTitle("Delete all items")
                         .setMessage("All items will be delete.\nAre you sure?")
+                        .setCancelable(false)
+                        .setIcon(R.drawable.ic_warning_black_24dp)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 if (models.size()>0){
-                                    TasksRepository.deleteAll();
-                                    getActivity().recreate();
+                                    TasksRepository.deleteAll(userId);
+                                    delete.cancel();
+//                                    getActivity().recreate();
                                 } else {
                                     Toast.makeText(getActivity(), "You didn't have any items", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         })
-                        .setNegativeButton("No", null).create();
+                        .setNegativeButton("No", null)
+                        .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialogInterface) {
+                                updateAdapter();
+                            }
+                        })
+                        .create();
                 delete.show();
                 return true;
             default:

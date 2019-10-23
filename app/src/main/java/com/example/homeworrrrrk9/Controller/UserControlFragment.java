@@ -107,6 +107,8 @@ public class UserControlFragment extends Fragment {
                    delete = new AlertDialog.Builder(getActivity())
                             .setTitle("Delete user")
                             .setCancelable(false)
+                           .setIcon(R.drawable.ic_warning_black_24dp)
+                           .setMessage("This user and all related tasks will be delete.\nContinue?")
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {

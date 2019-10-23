@@ -72,8 +72,8 @@ public class TasksRepository {
         }
     }
 
-    public static void deleteAll(){
-        taskDao.deleteAll();
+    public static void deleteAll(Long id){
+        getInstance(mContext).cascadeDelete(id);
     }
 
     public int getTasksCount(Long id){
