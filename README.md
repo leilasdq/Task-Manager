@@ -16,4 +16,5 @@ This application shows list of your tasks.You can add, delete, edit and share yo
 - Tasks will save in ORM(GreenDao database) to access them every moment till you decide to delete them.<br/>
 - You can delete all tasks by pressing trash icon located in the menu.</br>
 - You can add images from your gallery or take picture from your camera for each task.</br>
+- If there is no task in a tab you will see a picture to alert you.
 - Every user has his own account and tasks. There is an admin that can see every one's tasks and accounts and has access to delete users and their task. For sign as admin user is *admin* and the same password *admin*.<br/>
